@@ -16,6 +16,10 @@ import { SearchFilter } from './components/hard/SearchFilter';
 
 // Shared Components
 import SectionInfo from './components/shared/SectionInfo';
+import TestCodeViewer from './components/shared/TestCodeViewer';
+
+// Test Code Data
+import { testCodeData } from './data/testCodeData';
 
 /**
  * MAIN APP COMPONENT
@@ -94,10 +98,18 @@ function App() {
               <p className="example-description">
                 Demonstrates basic component rendering, props testing, and text content validation.
               </p>
-              <div className="example-demo">
-                <Greeting name="Alice" />
-                <Greeting name="Bob" />
-                <Greeting name="Charlie" />
+              <div className="example-demo-with-test">
+                <div className="example-demo-content">
+                  <Greeting name="Alice" />
+                  <Greeting name="Bob" />
+                  <Greeting name="Charlie" />
+                </div>
+                <div className="example-test-button">
+                  <TestCodeViewer 
+                    testCode={testCodeData.Greeting} 
+                    componentName="Greeting"
+                  />
+                </div>
               </div>
             </div>
 
@@ -106,19 +118,27 @@ function App() {
               <p className="example-description">
                 Shows conditional rendering, CSS classes, multiple props, and accessibility testing.
               </p>
-              <div className="example-demo">
-                <UserCard
-                  name="John Doe"
-                  email="john@example.com"
-                  isActive={true}
-                  age={30}
-                />
-                <UserCard
-                  name="Jane Smith"
-                  email="jane@example.com"
-                  isActive={false}
-                  age={25}
-                />
+              <div className="example-demo-with-test">
+                <div className="example-demo-content">
+                  <UserCard
+                    name="John Doe"
+                    email="john@example.com"
+                    isActive={true}
+                    age={30}
+                  />
+                  <UserCard
+                    name="Jane Smith"
+                    email="jane@example.com"
+                    isActive={false}
+                    age={25}
+                  />
+                </div>
+                <div className="example-test-button">
+                  <TestCodeViewer 
+                    testCode={testCodeData.UserCard} 
+                    componentName="UserCard"
+                  />
+                </div>
               </div>
             </div>
 
@@ -127,19 +147,27 @@ function App() {
               <p className="example-description">
                 Demonstrates array rendering, empty states, and various data types.
               </p>
-              <div className="example-demo">
-                <ItemList
-                  title="Shopping List"
-                  items={['Apples', 'Bananas', 'Oranges']}
-                />
-                <ItemList
-                  title="Numbers"
-                  items={['1', '2', '3', '4', '5']}
-                />
-                <ItemList
-                  title="Empty List"
-                  items={[]}
-                />
+              <div className="example-demo-with-test">
+                <div className="example-demo-content">
+                  <ItemList
+                    title="Shopping List"
+                    items={['Apples', 'Bananas', 'Oranges']}
+                  />
+                  <ItemList
+                    title="Numbers"
+                    items={['1', '2', '3', '4', '5']}
+                  />
+                  <ItemList
+                    title="Empty List"
+                    items={[]}
+                  />
+                </div>
+                <div className="example-test-button">
+                  <TestCodeViewer 
+                    testCode={testCodeData.ItemList} 
+                    componentName="ItemList"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -155,10 +183,18 @@ function App() {
               <p className="example-description">
                 Demonstrates state management, user interactions, and accessibility testing.
               </p>
-              <div className="example-demo">
-                <Counter initialCount={0} />
-                <Counter initialCount={10} step={5} />
-                <Counter initialCount={0} min={0} max={10} />
+              <div className="example-demo-with-test">
+                <div className="example-demo-content">
+                  <Counter initialCount={0} />
+                  <Counter initialCount={10} step={5} />
+                  <Counter initialCount={0} min={0} max={10} />
+                </div>
+                <div className="example-test-button">
+                  <TestCodeViewer 
+                    testCode={testCodeData.Counter} 
+                    componentName="Counter"
+                  />
+                </div>
               </div>
             </div>
 
@@ -167,8 +203,16 @@ function App() {
               <p className="example-description">
                 Shows form validation, async submission, and complex user interactions.
               </p>
-              <div className="example-demo">
-                <ContactForm onSubmit={(data: {name: string, email: string, message: string}) => console.log('Form submitted:', data)} />
+              <div className="example-demo-with-test">
+                <div className="example-demo-content">
+                  <ContactForm onSubmit={(data: {name: string, email: string, message: string}) => console.log('Form submitted:', data)} />
+                </div>
+                <div className="example-test-button">
+                  <TestCodeViewer 
+                    testCode={testCodeData.ContactForm} 
+                    componentName="ContactForm"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -184,8 +228,16 @@ function App() {
               <p className="example-description">
                 Demonstrates API mocking, async operations, loading states, and error handling.
               </p>
-              <div className="example-demo">
-                <UserList />
+              <div className="example-demo-with-test">
+                <div className="example-demo-content">
+                  <UserList />
+                </div>
+                <div className="example-test-button">
+                  <TestCodeViewer 
+                    testCode={testCodeData.UserList} 
+                    componentName="UserList"
+                  />
+                </div>
               </div>
             </div>
 
@@ -194,13 +246,21 @@ function App() {
               <p className="example-description">
                 Shows debouncing, complex async operations, advanced mocking, and intricate user interactions.
               </p>
-              <div className="example-demo">
-                <SearchFilter 
-                  onResultsChange={(results) => console.log('Search results:', results)}
-                  placeholder="Search products..."
-                  debounceMs={300}
-                  maxResults={5}
-                />
+              <div className="example-demo-with-test">
+                <div className="example-demo-content">
+                  <SearchFilter 
+                    onResultsChange={(results) => console.log('Search results:', results)}
+                    placeholder="Search products..."
+                    debounceMs={300}
+                    maxResults={5}
+                  />
+                </div>
+                <div className="example-test-button">
+                  <TestCodeViewer 
+                    testCode={testCodeData.SearchFilter} 
+                    componentName="SearchFilter"
+                  />
+                </div>
               </div>
             </div>
           </div>
