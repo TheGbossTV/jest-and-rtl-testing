@@ -68,57 +68,43 @@ const Counter: React.FC<CounterProps> = ({
   const canDecrement = count > min;
 
   return (
-    <div className="component-with-tests">
-      <div className="component-demo">
-        <div className="counter">
-          <h2>Counter</h2>
-          
-          <div className="counter-display">
-            {count}
-          </div>
-          
-          <div className="counter-controls">
-            <button
-              onClick={decrement}
-              disabled={!canDecrement}
-              aria-label="Decrease count"
-            >
-              -
-            </button>
-            
-            <button
-              onClick={reset}
-              aria-label="Reset count"
-            >
-              Reset
-            </button>
-            
-            <button
-              onClick={increment}
-              disabled={!canIncrement}
-              aria-label="Increase count"
-            >
-              +
-            </button>
-          </div>
-          
-          <div className="counter-info">
-            <p>Range: {min} to {max}</p>
-            <p>Step: {step}</p>
-          </div>
+    <div className="component-demo">
+      <div className="counter">
+        <h2>Counter</h2>
+        
+        <div className="counter-display">
+          {count}
         </div>
-      </div>
-      
-      <div className="test-coverage">
-        <h4>🧪 Tests Covered:</h4>
-        <ul>
-          <li>✅ Increments/decrements on button clicks</li>
-          <li>✅ Resets to initial value</li>
-          <li>✅ Respects min/max boundaries</li>
-          <li>✅ Disables buttons at limits</li>
-          <li>✅ Uses custom step values</li>
-          <li>✅ Displays range and step info</li>
-        </ul>
+        
+        <div className="counter-controls">
+          <button
+            onClick={decrement}
+            disabled={!canDecrement}
+            aria-label="Decrease count"
+          >
+            -
+          </button>
+          
+          <button
+            onClick={reset}
+            aria-label="Reset count"
+          >
+            Reset
+          </button>
+          
+          <button
+            onClick={increment}
+            disabled={!canIncrement}
+            aria-label="Increase count"
+          >
+            +
+          </button>
+        </div>
+        
+        <div className="counter-info">
+          <p>Range: {min} to {max}</p>
+          <p>Step: {step}</p>
+        </div>
       </div>
     </div>
   );

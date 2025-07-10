@@ -99,26 +99,12 @@ const UserList: React.FC<UserListProps> = ({
 
   if (loading) {
     return (
-      <div className="component-with-tests">
-        <div className="component-demo">
-          <div className="user-list">
-            <h2>Users</h2>
-            <div className="loading">
-              Loading users...
-            </div>
+      <div className="component-demo">
+        <div className="user-list">
+          <h2>Users</h2>
+          <div className="loading">
+            Loading users...
           </div>
-        </div>
-        
-        <div className="test-coverage">
-          <h4>🧪 Tests Covered:</h4>
-          <ul>
-            <li>✅ Shows loading state while fetching</li>
-            <li>✅ Displays users after successful fetch</li>
-            <li>✅ Shows error message on API failure</li>
-            <li>✅ Retry functionality works</li>
-            <li>✅ Request cancellation on unmount</li>
-            <li>✅ Handles empty user list</li>
-          </ul>
         </div>
       </div>
     );
@@ -126,72 +112,44 @@ const UserList: React.FC<UserListProps> = ({
 
   if (error) {
     return (
-      <div className="component-with-tests">
-        <div className="component-demo">
-          <div className="user-list">
-            <h2>Users</h2>
-            <div className="error">
-              Error: {error}
-            </div>
-            <button 
-              onClick={handleRetry}
-              className="retry-button"
-            >
-              Retry
-            </button>
+      <div className="component-demo">
+        <div className="user-list">
+          <h2>Users</h2>
+          <div className="error">
+            Error: {error}
           </div>
-        </div>
-        
-        <div className="test-coverage">
-          <h4>🧪 Tests Covered:</h4>
-          <ul>
-            <li>✅ Shows loading state while fetching</li>
-            <li>✅ Displays users after successful fetch</li>
-            <li>✅ Shows error message on API failure</li>
-            <li>✅ Retry functionality works</li>
-            <li>✅ Request cancellation on unmount</li>
-            <li>✅ Handles empty user list</li>
-          </ul>
+          <button 
+            onClick={handleRetry}
+            className="retry-button"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="component-with-tests">
-      <div className="component-demo">
-        <div className="user-list">
-          <h2>Users</h2>
-          <div className="user-count">
-            {users.length} users found
-          </div>
-          
-          <div className="users">
-            {users.map(user => (
-              <div key={user.id} className="user-card">
-                <h3>{user.name}</h3>
-                <p>
-                  <strong>Email:</strong> {user.email}
-                </p>
-                <p>
-                  <strong>Username:</strong> {user.username}
-                </p>
-              </div>
-            ))}
-          </div>
+    <div className="component-demo">
+      <div className="user-list">
+        <h2>Users</h2>
+        <div className="user-count">
+          {users.length} users found
         </div>
-      </div>
-      
-      <div className="test-coverage">
-        <h4>🧪 Tests Covered:</h4>
-        <ul>
-          <li>✅ Shows loading state while fetching</li>
-          <li>✅ Displays users after successful fetch</li>
-          <li>✅ Shows error message on API failure</li>
-          <li>✅ Retry functionality works</li>
-          <li>✅ Request cancellation on unmount</li>
-          <li>✅ Handles empty user list</li>
-        </ul>
+        
+        <div className="users">
+          {users.map(user => (
+            <div key={user.id} className="user-card">
+              <h3>{user.name}</h3>
+              <p>
+                <strong>Email:</strong> {user.email}
+              </p>
+              <p>
+                <strong>Username:</strong> {user.username}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

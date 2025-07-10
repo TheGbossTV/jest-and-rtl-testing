@@ -133,109 +133,84 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
 
   if (isSubmitted) {
     return (
-      <div className="component-with-tests">
-        <div className="component-demo">
-          <div className="success-message">
-            <h3>Thank you for your message!</h3>
-            <p>We'll get back to you soon.</p>
-            <button 
-              onClick={() => setIsSubmitted(false)}
-            >
-              Send Another Message
-            </button>
-          </div>
-        </div>
-        
-        <div className="test-coverage">
-          <h4>🧪 Tests Covered:</h4>
-          <ul>
-            <li>✅ Shows success message after submission</li>
-            <li>✅ Allows sending another message</li>
-            <li>✅ Resets form after success</li>
-          </ul>
+      <div className="component-demo">
+        <div className="success-message">
+          <h3>Thank you for your message!</h3>
+          <p>We'll get back to you soon.</p>
+          <button 
+            onClick={() => setIsSubmitted(false)}
+          >
+            Send Another Message
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="component-with-tests">
-      <div className="component-demo">
-        <form onSubmit={handleSubmit} className="contact-form">
-          <h2>Contact Us</h2>
-          
-          <div className="form-group">
-            <label htmlFor="name">Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className={errors.name ? 'error' : ''}
-            />
-            {errors.name && (
-              <span className="error-message">
-                {errors.name}
-              </span>
-            )}
-          </div>
+    <div className="component-demo">
+      <form onSubmit={handleSubmit} className="contact-form">
+        <h2>Contact Us</h2>
+        
+        <div className="form-group">
+          <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            className={errors.name ? 'error' : ''}
+          />
+          {errors.name && (
+            <span className="error-message">
+              {errors.name}
+            </span>
+          )}
+        </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={errors.email ? 'error' : ''}
-            />
-            {errors.email && (
-              <span className="error-message">
-                {errors.email}
-              </span>
-            )}
-          </div>
+        <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            className={errors.email ? 'error' : ''}
+          />
+          {errors.email && (
+            <span className="error-message">
+              {errors.email}
+            </span>
+          )}
+        </div>
 
-          <div className="form-group">
-            <label htmlFor="message">Message:</label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              className={errors.message ? 'error' : ''}
-              rows={4}
-            />
-            {errors.message && (
-              <span className="error-message">
-                {errors.message}
-              </span>
-            )}
-          </div>
+        <div className="form-group">
+          <label htmlFor="message">Message:</label>
+          <textarea
+            id="message"
+            name="message"
+            value={formData.message}
+            onChange={handleInputChange}
+            className={errors.message ? 'error' : ''}
+            rows={4}
+          />
+          {errors.message && (
+            <span className="error-message">
+              {errors.message}
+            </span>
+          )}
+        </div>
 
-          <button 
-            type="submit" 
-            disabled={isSubmitting}
-            className="submit-button"
-          >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
-          </button>
-        </form>
-      </div>
-      
-      <div className="test-coverage">
-        <h4>🧪 Tests Covered:</h4>
-        <ul>
-          <li>✅ Form renders with empty fields</li>
-          <li>✅ Input values update when typing</li>
-          <li>✅ Shows validation errors for empty/invalid fields</li>
-          <li>✅ Clears errors when user starts typing</li>
-          <li>✅ Submits form with valid data</li>
-          <li>✅ Shows loading state during submission</li>
-        </ul>
-      </div>
+        <button 
+          type="submit" 
+          disabled={isSubmitting}
+          className="submit-button"
+        >
+          {isSubmitting ? 'Sending...' : 'Send Message'}
+        </button>
+      </form>
     </div>
   );
 };

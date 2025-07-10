@@ -45,43 +45,29 @@ const UserCard: React.FC<UserCardProps> = ({
   isActive = true 
 }) => {
     return (
-    <div className="component-with-tests">
-      <div className="component-demo">
-        <div className={`user-card ${isActive ? 'active' : 'inactive'}`}>
-          <h2>{name}</h2>
-          
-          {email && (
-            <p>
-              <strong>Email:</strong> {email}
-            </p>
-          )}
-          
-          {age && (
-            <p>
-              <strong>Age:</strong> {age} years old
-            </p>
-          )}
-          
-          <div className="status">
-            <span 
-              className={`status-indicator ${isActive ? 'active' : 'inactive'}`}
-            >
-              {isActive ? '🟢 Active' : '🔴 Inactive'}
-            </span>
-          </div>
+    <div className="component-demo">
+      <div className={`user-card ${isActive ? 'active' : 'inactive'}`}>
+        <h2>{name}</h2>
+        
+        {email && (
+          <p>
+            <strong>Email:</strong> {email}
+          </p>
+        )}
+        
+        {age && (
+          <p>
+            <strong>Age:</strong> {age} years old
+          </p>
+        )}
+        
+        <div className="status">
+          <span 
+            className={`status-indicator ${isActive ? 'active' : 'inactive'}`}
+          >
+            {isActive ? '🟢 Active' : '🔴 Inactive'}
+          </span>
         </div>
-      </div>
-      
-      <div className="test-coverage">
-        <h4>🧪 Tests Covered:</h4>
-        <ul>
-          <li>✅ Shows/hides email when provided/missing</li>
-          <li>✅ Shows/hides age when provided/missing</li>
-          <li>✅ Displays correct active/inactive status</li>
-          <li>✅ Applies correct CSS classes</li>
-          <li>✅ Uses default isActive value</li>
-          <li>✅ Renders user name correctly</li>
-        </ul>
       </div>
     </div>
   );

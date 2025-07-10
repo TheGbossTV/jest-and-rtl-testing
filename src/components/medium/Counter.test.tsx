@@ -2,7 +2,7 @@
  * MEDIUM EXAMPLE 1: Testing State Management and User Interactions
  * 
  * This test file demonstrates:
- * - Testing user interactions with fireEvent (note: userEvent is preferred for modern tests)
+ * - Testing user interactions with userEvent (preferred for modern tests)
  * - Testing state changes and updates
  * - Testing disabled states and boundary conditions
  * - Testing edge cases and input validation
@@ -10,7 +10,8 @@
  */
 
 /// <reference types="@testing-library/jest-dom" />
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import Counter from './Counter';
 
 describe('Counter Component', () => {
@@ -44,25 +45,27 @@ describe('Counter Component', () => {
    * TEST 2: Increment Functionality
    * Test that clicking the increment button increases the count
    */
-  test('increments count when increment button is clicked', () => {
+  test('increments count when increment button is clicked', async () => {
     // ARRANGE
+    const user = userEvent.setup();
     render(<Counter />);
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     
     // ACT: Click increment button
-    fireEvent.click(incrementButton);
+    await user.click(incrementButton);
     
     // ASSERT: Check that count increased
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
-  test('increments by custom step value', () => {
+  test('increments by custom step value', async () => {
     // ARRANGE: Render with custom step
+    const user = userEvent.setup();
     render(<Counter step={5} />);
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     
     // ACT: Click increment button
-    fireEvent.click(incrementButton);
+    await user.click(incrementButton);
     
     // ASSERT: Check that count increased by step value
     expect(screen.getByText('5')).toBeInTheDocument();
@@ -72,13 +75,14 @@ describe('Counter Component', () => {
    * TEST 3: Decrement Functionality
    * Test that clicking the decrement button decreases the count
    */
-  test('decrements count when decrement button is clicked', () => {
+  test('decrements count when decrement button is clicked', async () => {
     // ARRANGE: Start with positive count
+    const user = userEvent.setup();
     render(<Counter initialCount={5} />);
     const decrementButton = screen.getByRole('button', { name: /decrease count/i });
     
     // ACT: Click decrement button
-    fireEvent.click(decrementButton);
+    await user.click(decrementButton);
     
     // ASSERT: Check that count decreased
     expect(screen.getByText('4')).toBeInTheDocument();
@@ -88,18 +92,19 @@ describe('Counter Component', () => {
    * TEST 4: Reset Functionality
    * Test that clicking the reset button resets to initial value
    */
-  test('resets count to initial value when reset button is clicked', () => {
+  test('resets count to initial value when reset button is clicked', async () => {
     // ARRANGE: Start with initial count and modify it
+    const user = userEvent.setup();
     render(<Counter initialCount={10} />);
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     const resetButton = screen.getByRole('button', { name: /reset count/i });
     
     // ACT: Modify count then reset
-    fireEvent.click(incrementButton);
-    fireEvent.click(incrementButton);
+    await user.click(incrementButton);
+    await user.click(incrementButton);
     expect(screen.getByText('12')).toBeInTheDocument(); // Verify it changed
     
-    fireEvent.click(resetButton);
+    await user.click(resetButton);
     
     // ASSERT: Check that count reset to initial value
     expect(screen.getByText('10')).toBeInTheDocument();
@@ -109,19 +114,20 @@ describe('Counter Component', () => {
    * TEST 5: Multiple Interactions
    * Test multiple button clicks in sequence
    */
-  test('handles multiple button clicks correctly', () => {
+  test('handles multiple button clicks correctly', async () => {
     // ARRANGE
+    const user = userEvent.setup();
     render(<Counter />);
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     const decrementButton = screen.getByRole('button', { name: /decrease count/i });
     
     // ACT: Multiple clicks
-    fireEvent.click(incrementButton);
-    fireEvent.click(incrementButton);
-    fireEvent.click(incrementButton);
+    await user.click(incrementButton);
+    await user.click(incrementButton);
+    await user.click(incrementButton);
     expect(screen.getByText('3')).toBeInTheDocument();
     
-    fireEvent.click(decrementButton);
+    await user.click(decrementButton);
     
     // ASSERT: Check final value
     expect(screen.getByText('2')).toBeInTheDocument();
@@ -131,25 +137,27 @@ describe('Counter Component', () => {
    * TEST 6: Boundary Testing (Min/Max)
    * Test that the counter respects min and max boundaries
    */
-  test('respects maximum boundary', () => {
+  test('respects maximum boundary', async () => {
     // ARRANGE: Set max value
+    const user = userEvent.setup();
     render(<Counter initialCount={5} max={5} />);
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     
     // ACT: Try to increment beyond max
-    fireEvent.click(incrementButton);
+    await user.click(incrementButton);
     
     // ASSERT: Count should not exceed max
     expect(screen.getByText('5')).toBeInTheDocument();
   });
 
-  test('respects minimum boundary', () => {
+  test('respects minimum boundary', async () => {
     // ARRANGE: Set min value
+    const user = userEvent.setup();
     render(<Counter initialCount={0} min={0} />);
     const decrementButton = screen.getByRole('button', { name: /decrease count/i });
     
     // ACT: Try to decrement below min
-    fireEvent.click(decrementButton);
+    await user.click(decrementButton);
     
     // ASSERT: Count should not go below min
     expect(screen.getByText('0')).toBeInTheDocument();

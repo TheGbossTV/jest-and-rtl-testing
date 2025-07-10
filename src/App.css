@@ -843,6 +843,7 @@ body {
 .component-with-tests {
   display: flex;
   gap: 1.5rem;
+  flex: 1;
   margin-bottom: 1rem;
   align-items: flex-start;
 }

@@ -239,9 +239,8 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
   };
 
   return (
-    <div className="component-with-tests">
-      <div className="component-demo">
-        <div className="search-filter">
+    <div className="component-demo">
+      <div className="search-filter">
           <h2>Advanced Search</h2>
           
           {/* Search Input */}
@@ -372,20 +371,5 @@ export const SearchFilter: React.FC<SearchFilterProps> = ({
           </div>
         </div>
       </div>
-      
-      <div className="test-coverage">
-        <h4>🧪 Tests Covered:</h4>
-        <ul>
-          <li>✅ Debounced search input functionality</li>
-          <li>✅ All filter controls work correctly</li>
-          <li>✅ Shows loading state during searches</li>
-          <li>✅ Displays search results with correct data</li>
-          <li>✅ Handles error states and retry</li>
-          <li>✅ Clear all resets filters and results</li>
-          <li>✅ Search statistics tracking</li>
-          <li>✅ Complex filter combinations</li>
-        </ul>
-      </div>
-    </div>
   );
 }; 

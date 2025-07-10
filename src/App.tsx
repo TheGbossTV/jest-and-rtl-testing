@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 // Easy Examples
@@ -17,9 +17,70 @@ import { SearchFilter } from './components/hard/SearchFilter';
 // Shared Components
 import SectionInfo from './components/shared/SectionInfo';
 import TestCodeViewer from './components/shared/TestCodeViewer';
+import TestCoverage from './components/shared/TestCoverage';
 
 // Test Code Data
 import { codeData } from './data/testCodeData';
+
+// Test descriptions for each component
+const testDescriptions = {
+  Greeting: [
+    'Renders with correct name',
+    'Uses default name when not provided',
+    'Displays proper HTML structure',
+    'Shows welcome message correctly'
+  ],
+  UserCard: [
+    'Shows/hides email when provided/missing',
+    'Shows/hides age when provided/missing',
+    'Displays correct active/inactive status',
+    'Applies correct CSS classes',
+    'Uses default isActive value',
+    'Renders user name correctly'
+  ],
+  ItemList: [
+    'Renders all list items correctly',
+    'Shows empty message when no items',
+    'Displays correct item count',
+    'Uses custom vs default titles',
+    'Uses custom vs default empty messages',
+    'Renders proper list semantics (ul/li)'
+  ],
+  Counter: [
+    'Increments/decrements on button clicks',
+    'Resets to initial value',
+    'Respects min/max boundaries',
+    'Disables buttons at limits',
+    'Uses custom step values',
+    'Displays range and step info'
+  ],
+  ContactForm: [
+    'Form renders with empty fields',
+    'Input values update when typing',
+    'Shows validation errors for empty/invalid fields',
+    'Clears errors when user starts typing',
+    'Submits form with valid data',
+    'Shows loading state during submission'
+  ],
+  UserList: [
+    'Shows loading state while fetching',
+    'Displays users after successful fetch',
+    'Shows error message on API failure',
+    'Retry functionality works',
+    'Request cancellation on unmount',
+    'Handles empty user list'
+  ],
+  SearchFilter: [
+    'Debounced search input functionality',
+    'All filter controls work correctly',
+    'Shows loading state during searches',
+    'Displays search results with correct data',
+    'Handles error states and retry',
+    'Clear all resets filters and results',
+    'Search statistics tracking',
+    'Complex filter combinations'
+  ]
+};
 
 /**
  * MAIN APP COMPONENT
@@ -99,10 +160,13 @@ function App() {
                 Demonstrates basic component rendering, props testing, and text content validation.
               </p>
               <div className="example-demo-with-test">
-                <div className="example-demo-content">
-                  <Greeting name="Alice" />
-                  <Greeting name="Bob" />
-                  <Greeting name="Charlie" />
+                <div className="component-with-tests">
+                  <div className="example-demo-content">
+                    <Greeting name="Alice" />
+                    <Greeting name="Bob" />
+                    <Greeting name="Charlie" />
+                  </div>
+                  <TestCoverage tests={testDescriptions.Greeting} />
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
@@ -120,19 +184,22 @@ function App() {
                 Shows conditional rendering, CSS classes, multiple props, and accessibility testing.
               </p>
               <div className="example-demo-with-test">
-                <div className="example-demo-content">
-                  <UserCard
-                    name="John Doe"
-                    email="john@example.com"
-                    isActive={true}
-                    age={30}
-                  />
-                  <UserCard
-                    name="Jane Smith"
-                    email="jane@example.com"
-                    isActive={false}
-                    age={25}
-                  />
+                <div className="component-with-tests">
+                  <div className="example-demo-content">
+                    <UserCard
+                      name="John Doe"
+                      email="john@example.com"
+                      isActive={true}
+                      age={30}
+                    />
+                    <UserCard
+                      name="Jane Smith"
+                      email="jane@example.com"
+                      isActive={false}
+                      age={25}
+                    />
+                  </div>
+                  <TestCoverage tests={testDescriptions.UserCard} />
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
@@ -150,19 +217,22 @@ function App() {
                 Demonstrates array rendering, empty states, and various data types.
               </p>
               <div className="example-demo-with-test">
-                <div className="example-demo-content">
-                  <ItemList
-                    title="Shopping List"
-                    items={['Apples', 'Bananas', 'Oranges']}
-                  />
-                  <ItemList
-                    title="Numbers"
-                    items={['1', '2', '3', '4', '5']}
-                  />
-                  <ItemList
-                    title="Empty List"
-                    items={[]}
-                  />
+                <div className="component-with-tests">
+                  <div className="example-demo-content">
+                    <ItemList
+                      title="Shopping List"
+                      items={['Apples', 'Bananas', 'Oranges']}
+                    />
+                    <ItemList
+                      title="Numbers"
+                      items={['1', '2', '3', '4', '5']}
+                    />
+                    <ItemList
+                      title="Empty List"
+                      items={[]}
+                    />
+                  </div>
+                  <TestCoverage tests={testDescriptions.ItemList} />
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
@@ -187,10 +257,13 @@ function App() {
                 Demonstrates state management, user interactions, and accessibility testing.
               </p>
               <div className="example-demo-with-test">
-                <div className="example-demo-content">
-                  <Counter initialCount={0} />
-                  <Counter initialCount={10} step={5} />
-                  <Counter initialCount={0} min={0} max={10} />
+                <div className="component-with-tests">
+                  <div className="example-demo-content">
+                    <Counter initialCount={0} />
+                    <Counter initialCount={10} step={5} />
+                    <Counter initialCount={0} min={0} max={10} />
+                  </div>
+                  <TestCoverage tests={testDescriptions.Counter} />
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
@@ -208,8 +281,11 @@ function App() {
                 Shows form validation, async submission, and complex user interactions.
               </p>
               <div className="example-demo-with-test">
-                <div className="example-demo-content">
-                  <ContactForm onSubmit={(data: {name: string, email: string, message: string}) => console.log('Form submitted:', data)} />
+                <div className="component-with-tests">
+                  <div className="example-demo-content">
+                    <ContactForm onSubmit={(data: {name: string, email: string, message: string}) => console.log('Form submitted:', data)} />
+                  </div>
+                  <TestCoverage tests={testDescriptions.ContactForm} />
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
@@ -234,8 +310,11 @@ function App() {
                 Demonstrates API mocking, async operations, loading states, and error handling.
               </p>
               <div className="example-demo-with-test">
-                <div className="example-demo-content">
-                  <UserList />
+                <div className="component-with-tests">
+                  <div className="example-demo-content">
+                    <UserList />
+                  </div>
+                  <TestCoverage tests={testDescriptions.UserList} />
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
@@ -253,13 +332,16 @@ function App() {
                 Shows debouncing, complex async operations, advanced mocking, and intricate user interactions.
               </p>
               <div className="example-demo-with-test">
-                <div className="example-demo-content">
-                  <SearchFilter 
-                    onResultsChange={(results) => console.log('Search results:', results)}
-                    placeholder="Search products..."
-                    debounceMs={300}
-                    maxResults={5}
-                  />
+                <div className="component-with-tests">
+                  <div className="example-demo-content">
+                    <SearchFilter 
+                      onResultsChange={(results) => console.log('Search results:', results)}
+                      placeholder="Search products..."
+                      debounceMs={300}
+                      maxResults={5}
+                    />
+                  </div>
+                  <TestCoverage tests={testDescriptions.SearchFilter} />
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 

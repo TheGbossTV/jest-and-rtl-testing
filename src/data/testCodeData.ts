@@ -96,21 +96,9 @@ interface GreetingProps {
 
 const Greeting: React.FC<GreetingProps> = ({ name = 'World' }) => {
   return (
-    <div className="component-with-tests">
-      <div className="component-demo">
-        <h1>Hello, {name}!</h1>
-        <p>Welcome to our testing tutorial.</p>
-      </div>
-      
-      <div className="test-coverage">
-        <h4>🧪 Tests Covered:</h4>
-        <ul>
-          <li>✅ Renders with correct name</li>
-          <li>✅ Uses default name when not provided</li>
-          <li>✅ Displays proper HTML structure</li>
-          <li>✅ Shows welcome message correctly</li>
-        </ul>
-      </div>
+    <div className="component-demo">
+      <h1>Hello, {name}!</h1>
+      <p>Welcome to our testing tutorial.</p>
     </div>
   );
 };

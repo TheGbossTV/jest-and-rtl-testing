@@ -44,41 +44,27 @@ const ItemList: React.FC<ItemListProps> = ({
   emptyMessage = "No items to display" 
 }) => {
   return (
-    <div className="component-with-tests">
-      <div className="component-demo">
-        <div className="item-list">
-          <h3>{title}</h3>
-          
-          {items.length === 0 ? (
-            <p className="empty-message">
-              {emptyMessage}
-            </p>
-          ) : (
-            <ul>
-              {items.map((item, index) => (
-                <li key={index}>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          )}
-          
-          <div className="item-count">
-            Total items: {items.length}
-          </div>
+    <div className="component-demo">
+      <div className="item-list">
+        <h3>{title}</h3>
+        
+        {items.length === 0 ? (
+          <p className="empty-message">
+            {emptyMessage}
+          </p>
+        ) : (
+          <ul>
+            {items.map((item, index) => (
+              <li key={index}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
+        
+        <div className="item-count">
+          Total items: {items.length}
         </div>
-      </div>
-      
-      <div className="test-coverage">
-        <h4>🧪 Tests Covered:</h4>
-        <ul>
-          <li>✅ Renders all list items correctly</li>
-          <li>✅ Shows empty message when no items</li>
-          <li>✅ Displays correct item count</li>
-          <li>✅ Uses custom vs default titles</li>
-          <li>✅ Uses custom vs default empty messages</li>
-          <li>✅ Renders proper list semantics (ul/li)</li>
-        </ul>
       </div>
     </div>
   );
