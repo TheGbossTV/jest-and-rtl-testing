@@ -13,6 +13,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import UserCard from './UserCard';
 
+// TEST SUITE ORGANIZATION: Group related tests for better organization
 describe('UserCard Component', () => {
   
   /**
@@ -29,9 +30,13 @@ describe('UserCard Component', () => {
     // Check that default active status is applied
     expect(screen.getByText('🟢 Active')).toBeInTheDocument();
     
-    // Check that optional fields are NOT rendered when not provided
+    // CONDITIONAL RENDERING TEST: Use queryBy* for elements that might not exist
+    // queryBy* returns null instead of throwing error - perfect for negative assertions
     expect(screen.queryByText(/Email:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Age:/)).not.toBeInTheDocument();
+    
+    // REGEX PATTERNS: /Email:/ matches any text containing "Email:"
+    // Useful when exact text position in DOM is unknown
   });
 
   /**
@@ -40,6 +45,7 @@ describe('UserCard Component', () => {
    */
   test('renders with all props provided', () => {
     // ARRANGE: Render with all props
+    // OBJECT SPREAD: Clean way to pass multiple props
     const props = {
       name: 'Jane Smith',
       email: 'jane@example.com',
@@ -74,6 +80,7 @@ describe('UserCard Component', () => {
     
     // ACT & ASSERT: Check inactive status
     expect(screen.getByText('🔴 Inactive')).toBeInTheDocument();
+    // NEGATIVE ASSERTION: Verify active status is NOT shown
     expect(screen.queryByText('🟢 Active')).not.toBeInTheDocument();
   });
 
@@ -91,6 +98,7 @@ describe('UserCard Component', () => {
     );
     
     // ACT & ASSERT: Email should be present, age should not
+    // This tests the conditional rendering logic in the component
     expect(screen.getByText(/Email:/)).toBeInTheDocument();
     expect(screen.queryByText(/Age:/)).not.toBeInTheDocument();
   });
@@ -111,15 +119,18 @@ describe('UserCard Component', () => {
   });
 
   /**
-   * TEST 5: CSS Classes
-   * Test that the correct CSS classes are applied
+   * TEST 5: CSS Classes Testing
+   * Test that the correct CSS classes are applied based on props
    */
   test('applies correct CSS classes for active user', () => {
     // ARRANGE
     render(<UserCard name="Test User" isActive={true} />);
     
     // ACT & ASSERT: Check CSS classes on the container
+    // DOM TRAVERSAL: closest() finds the nearest ancestor with the specified selector
     const container = screen.getByText('Test User').closest('.user-card');
+    
+    // toHaveClass() - Jest matcher for checking CSS classes
     expect(container).toHaveClass('user-card', 'active');
     expect(container).not.toHaveClass('inactive');
   });
@@ -135,14 +146,16 @@ describe('UserCard Component', () => {
   });
 
   /**
-   * TEST 6: Element Structure
-   * Test the HTML structure and roles
+   * TEST 6: Element Structure & Accessibility
+   * Test the HTML structure and accessibility roles
    */
   test('has correct heading structure', () => {
     // ARRANGE
     render(<UserCard name="Test User" />);
     
     // ACT & ASSERT: Check heading role and level
+    // getByRole() - Preferred method for accessibility testing
+    // Tests both functionality and accessibility compliance
     const heading = screen.getByRole('heading', { level: 2 });
     expect(heading).toBeInTheDocument();
     expect(heading).toHaveTextContent('Test User');

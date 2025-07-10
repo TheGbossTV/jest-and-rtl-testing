@@ -16,7 +16,7 @@ import ItemList from './ItemList';
 describe('ItemList Component', () => {
   
   /**
-   * TEST 1: Empty List
+   * TEST 1: Empty List State
    * Test how the component handles an empty array
    */
   test('renders empty message when no items provided', () => {
@@ -26,9 +26,13 @@ describe('ItemList Component', () => {
     // ACT & ASSERT: Check empty state
     expect(screen.getByText('No items to display')).toBeInTheDocument();
     
-    // Check that no list is rendered (in the component output area)
+    // DOM TRAVERSAL: Check that no list is rendered in the component output area
+    // closest() finds the nearest ancestor matching the selector
     const componentOutput = screen.getByText('No items to display').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
+    
+    // querySelector() - Direct DOM query within a specific element
+    // Use when RTL queries aren't specific enough
     expect(componentOutput!.querySelector('ul')).not.toBeInTheDocument();
     
     // Check item count shows 0
@@ -49,7 +53,7 @@ describe('ItemList Component', () => {
   });
 
   /**
-   * TEST 3: Single Item
+   * TEST 3: Single Item Rendering
    * Test rendering with one item
    */
   test('renders single item correctly', () => {
@@ -58,14 +62,16 @@ describe('ItemList Component', () => {
     render(<ItemList items={items} />);
     
     // ACT & ASSERT: Check list is rendered
-    // Use a more specific query that looks for the item list, not the educational content lists
+    // DOM TRAVERSAL: Find the list element that contains our item
     const itemsContainer = screen.getByText('First item').closest('ul');
     expect(itemsContainer).toBeInTheDocument();
     
-    // Check single item is present
-    // Query for listitem within the actual component output area
+    // SPECIFIC SCOPING: Query within the actual component output area
+    // This avoids false positives from educational content in the component
     const componentOutput = screen.getByText('First item').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
+    
+    // querySelectorAll() - Gets all matching elements within a container
     const listItems = componentOutput!.querySelectorAll('li');
     expect(listItems).toHaveLength(1);
     expect(listItems[0]).toHaveTextContent('First item');
@@ -73,12 +79,12 @@ describe('ItemList Component', () => {
     // Check item count
     expect(screen.getByText('Total items: 1')).toBeInTheDocument();
     
-    // Check no empty message
+    // NEGATIVE ASSERTION: Verify empty message is not shown
     expect(screen.queryByText('No items to display')).not.toBeInTheDocument();
   });
 
   /**
-   * TEST 4: Multiple Items
+   * TEST 4: Multiple Items Rendering
    * Test rendering with multiple items
    */
   test('renders multiple items correctly', () => {
@@ -89,10 +95,12 @@ describe('ItemList Component', () => {
     // ACT & ASSERT: Check all items are rendered
     const componentOutput = screen.getByText('Apple').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
+    
+    // ARRAY LENGTH TESTING: Verify correct number of items
     const listItems = componentOutput!.querySelectorAll('li');
     expect(listItems).toHaveLength(4);
     
-    // Check each item content
+    // CONTENT VALIDATION: Check each item content individually
     expect(listItems[0]).toHaveTextContent('Apple');
     expect(listItems[1]).toHaveTextContent('Banana');
     expect(listItems[2]).toHaveTextContent('Cherry');
@@ -103,7 +111,7 @@ describe('ItemList Component', () => {
   });
 
   /**
-   * TEST 5: Custom Title
+   * TEST 5: Custom Title Props
    * Test custom title prop
    */
   test('renders custom title', () => {
@@ -114,12 +122,14 @@ describe('ItemList Component', () => {
     // ACT & ASSERT: Check custom title appears
     const componentOutput = screen.getByText(customTitle).closest('.component-demo');
     expect(componentOutput).not.toBeNull();
+    
+    // SPECIFIC ELEMENT QUERY: Look for h3 within the component output
     const heading = componentOutput!.querySelector('h3');
     expect(heading).toHaveTextContent(customTitle);
   });
 
   /**
-   * TEST 6: Default Title
+   * TEST 6: Default Props Testing
    * Test default title when none provided
    */
   test('renders default title when none provided', () => {
@@ -134,7 +144,7 @@ describe('ItemList Component', () => {
   });
 
   /**
-   * TEST 7: List Structure
+   * TEST 7: HTML Structure Testing
    * Test the HTML structure of the list
    */
   test('renders proper HTML list structure', () => {
@@ -145,16 +155,18 @@ describe('ItemList Component', () => {
     // ACT & ASSERT: Check list structure
     const componentOutput = screen.getByText('Item 1').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
+    
+    // SEMANTIC HTML TESTING: Verify proper list structure
     const list = componentOutput!.querySelector('ul');
     expect(list).toBeInTheDocument();
     
-    // Check list items have correct role
+    // Check list items have correct structure
     const listItems = componentOutput!.querySelectorAll('li');
     expect(listItems).toHaveLength(2);
   });
 
   /**
-   * TEST 8: Testing with Various Data Types
+   * TEST 8: Edge Cases & Data Validation
    * Test how the component handles different string content
    */
   test('handles various string content', () => {
@@ -168,7 +180,7 @@ describe('ItemList Component', () => {
     const listItems = componentOutput!.querySelectorAll('li');
     expect(listItems).toHaveLength(4);
     
-    // Check specific content
+    // EDGE CASE TESTING: Verify different content types are handled
     expect(listItems[0]).toHaveTextContent(''); // Empty string
     expect(listItems[1]).toHaveTextContent('Normal text');
     expect(listItems[2]).toHaveTextContent('Text with numbers 123');

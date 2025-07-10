@@ -12,7 +12,7 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Greeting from './Greeting';
 
-// Group related tests together using describe()
+// GROUP RELATED TESTS: describe() creates a test suite - organizes tests logically
 describe('Greeting Component', () => {
   
   /**
@@ -25,9 +25,13 @@ describe('Greeting Component', () => {
     render(<Greeting />);
     
     // ACT & ASSERT: Find elements and make assertions
-    // screen.getByText() looks for text content in the rendered component
+    // screen.getByText() - IMPORTANT: This throws an error if element is not found
+    // Use getBy* when you expect the element to exist
     expect(screen.getByText('Hello, World!')).toBeInTheDocument();
     expect(screen.getByText('Welcome to our testing tutorial.')).toBeInTheDocument();
+    
+    // toBeInTheDocument() - Jest matcher from @testing-library/jest-dom
+    // Verifies the element exists in the DOM
   });
 
   /**
@@ -55,15 +59,18 @@ describe('Greeting Component', () => {
     render(<Greeting name="Alice" />);
     
     // ACT & ASSERT: Check for specific HTML elements
-    // getByRole() finds elements by their accessibility role
+    // getByRole() - Finds elements by their ARIA role (better for accessibility)
+    // This is often preferred over text-based queries for semantic elements
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toBeInTheDocument();
     expect(heading).toHaveTextContent('Hello, Alice!');
+    
+    // toHaveTextContent() - Checks if element contains specific text content
   });
 
   /**
-   * TEST 4: Multiple Assertions
-   * This test demonstrates how to make multiple assertions in one test
+   * TEST 4: Multiple Assertions & Query Methods
+   * This test demonstrates different query methods and their use cases
    */
   test('contains all expected elements', () => {
     // ARRANGE
@@ -73,7 +80,12 @@ describe('Greeting Component', () => {
     expect(screen.getByText('Hello, Bob!')).toBeInTheDocument();
     expect(screen.getByText('Welcome to our testing tutorial.')).toBeInTheDocument();
     
-    // We can also check that certain text is NOT present
+    // KEY DIFFERENCE: queryBy* vs getBy*
+    // queryBy* returns null if element not found (doesn't throw error)
+    // Use queryBy* when you expect the element to NOT exist
     expect(screen.queryByText('Hello, World!')).not.toBeInTheDocument();
+    
+    // This is safer than using getBy* for negative assertions
+    // getBy* would throw an error if element doesn't exist
   });
 }); 

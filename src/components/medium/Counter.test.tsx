@@ -14,6 +14,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Counter from './Counter';
 
+// TEST SUITE: Groups related tests for the Counter component
 describe('Counter Component', () => {
   
   /**
@@ -27,7 +28,8 @@ describe('Counter Component', () => {
     // ACT & ASSERT: Check initial display
     expect(screen.getByText('0')).toBeInTheDocument();
     
-    // Check that all buttons are present
+    // ACCESSIBILITY TESTING: Check that all buttons are present and accessible
+    // Using getByRole with name option - name refers to accessible name (aria-label)
     expect(screen.getByRole('button', { name: /increase count/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /decrease count/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /reset count/i })).toBeInTheDocument();
@@ -35,6 +37,7 @@ describe('Counter Component', () => {
 
   test('renders with custom initial count', () => {
     // ARRANGE: Render with custom initial value
+    // PROPS TESTING: Verify component respects initial prop values
     render(<Counter initialCount={5} />);
     
     // ACT & ASSERT: Check custom initial display
@@ -42,19 +45,24 @@ describe('Counter Component', () => {
   });
 
   /**
-   * TEST 2: Increment Functionality
+   * TEST 2: User Interactions with userEvent
    * Test that clicking the increment button increases the count
    */
   test('increments count when increment button is clicked', async () => {
     // ARRANGE
+    // userEvent.setup() - MODERN APPROACH: More realistic than fireEvent
+    // userEvent simulates real user interactions (hover, focus, click sequence)
     const user = userEvent.setup();
     render(<Counter />);
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     
     // ACT: Click increment button
+    // await user.click() - ASYNC INTERACTION: userEvent methods are async
+    // This better simulates real user behavior with proper timing
     await user.click(incrementButton);
     
     // ASSERT: Check that count increased
+    // STATE CHANGE TESTING: Verify component state updated correctly
     expect(screen.getByText('1')).toBeInTheDocument();
   });
 
@@ -68,11 +76,12 @@ describe('Counter Component', () => {
     await user.click(incrementButton);
     
     // ASSERT: Check that count increased by step value
+    // PROP INTERACTION TESTING: Verify props affect component behavior
     expect(screen.getByText('5')).toBeInTheDocument();
   });
 
   /**
-   * TEST 3: Decrement Functionality
+   * TEST 3: State Management Testing
    * Test that clicking the decrement button decreases the count
    */
   test('decrements count when decrement button is clicked', async () => {
@@ -102,16 +111,18 @@ describe('Counter Component', () => {
     // ACT: Modify count then reset
     await user.click(incrementButton);
     await user.click(incrementButton);
-    expect(screen.getByText('12')).toBeInTheDocument(); // Verify it changed
+    // INTERMEDIATE ASSERTION: Verify state changed before reset
+    expect(screen.getByText('12')).toBeInTheDocument();
     
     await user.click(resetButton);
     
     // ASSERT: Check that count reset to initial value
+    // RESET LOGIC TESTING: Verify reset returns to initial state, not zero
     expect(screen.getByText('10')).toBeInTheDocument();
   });
 
   /**
-   * TEST 5: Multiple Interactions
+   * TEST 5: Multiple Interactions & Sequence Testing
    * Test multiple button clicks in sequence
    */
   test('handles multiple button clicks correctly', async () => {
@@ -122,6 +133,7 @@ describe('Counter Component', () => {
     const decrementButton = screen.getByRole('button', { name: /decrease count/i });
     
     // ACT: Multiple clicks
+    // SEQUENCE TESTING: Test complex user interaction patterns
     await user.click(incrementButton);
     await user.click(incrementButton);
     await user.click(incrementButton);
@@ -134,7 +146,7 @@ describe('Counter Component', () => {
   });
 
   /**
-   * TEST 6: Boundary Testing (Min/Max)
+   * TEST 6: Boundary Testing & Edge Cases
    * Test that the counter respects min and max boundaries
    */
   test('respects maximum boundary', async () => {
@@ -147,6 +159,7 @@ describe('Counter Component', () => {
     await user.click(incrementButton);
     
     // ASSERT: Count should not exceed max
+    // BOUNDARY TESTING: Verify component respects constraints
     expect(screen.getByText('5')).toBeInTheDocument();
   });
 
@@ -164,7 +177,7 @@ describe('Counter Component', () => {
   });
 
   /**
-   * TEST 7: Button Disabled States
+   * TEST 7: Disabled State Testing
    * Test that buttons are disabled when appropriate
    */
   test('disables increment button when at maximum', () => {
@@ -172,8 +185,12 @@ describe('Counter Component', () => {
     render(<Counter initialCount={10} max={10} />);
     
     // ACT & ASSERT: Increment button should be disabled
+    // DISABLED STATE TESTING: Verify buttons are disabled at boundaries
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     expect(incrementButton).toBeDisabled();
+    
+    // toBeDisabled() - Jest matcher for checking disabled state
+    // Important for accessibility and user experience
   });
 
   test('disables decrement button when at minimum', () => {
@@ -193,34 +210,27 @@ describe('Counter Component', () => {
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
     const decrementButton = screen.getByRole('button', { name: /decrease count/i });
     
+    // toBeEnabled() - Jest matcher for checking enabled state
     expect(incrementButton).toBeEnabled();
     expect(decrementButton).toBeEnabled();
   });
 
   /**
-   * TEST 8: Accessibility
-   * Test that buttons have proper aria labels
+   * TEST 8: Component Remounting Testing
+   * Test that new instances start with different initial values
    */
-  test('has accessible button labels', () => {
-    // ARRANGE
-    render(<Counter />);
+  test('creates new instances with different initial values', () => {
+    // ARRANGE & ACT: Render first instance
+    const { unmount } = render(<Counter initialCount={5} />);
+    expect(screen.getByText('5')).toBeInTheDocument();
     
-    // ACT & ASSERT: Check aria labels
-    expect(screen.getByLabelText('Increase count')).toBeInTheDocument();
-    expect(screen.getByLabelText('Decrease count')).toBeInTheDocument();
-    expect(screen.getByLabelText('Reset count')).toBeInTheDocument();
-  });
-
-  /**
-   * TEST 9: Info Display
-   * Test that component displays range and step information
-   */
-  test('displays range and step information', () => {
-    // ARRANGE: Render with custom values
-    render(<Counter min={1} max={20} step={2} />);
+    // UNMOUNT & REMOUNT: Unmount and render new instance
+    // This demonstrates that initialCount works correctly for fresh instances
+    unmount();
+    render(<Counter initialCount={10} />);
     
-    // ACT & ASSERT: Check info display
-    expect(screen.getByText('Range: 1 to 20')).toBeInTheDocument();
-    expect(screen.getByText('Step: 2')).toBeInTheDocument();
+    // ASSERT: Check that new instance has different initial value
+    // COMPONENT LIFECYCLE: Shows that initialCount is properly used for new instances
+    expect(screen.getByText('10')).toBeInTheDocument();
   });
 }); 

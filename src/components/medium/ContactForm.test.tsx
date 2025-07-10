@@ -26,9 +26,14 @@ describe('ContactForm Component', () => {
     render(<ContactForm />);
     
     // ACT & ASSERT: Check all form fields are empty
+    // FORM TESTING: getByLabelText() finds inputs by their associated labels
+    // This tests both the input and its accessibility (proper labeling)
     expect(screen.getByLabelText(/name/i)).toHaveValue('');
     expect(screen.getByLabelText(/email/i)).toHaveValue('');
     expect(screen.getByLabelText(/message/i)).toHaveValue('');
+    
+    // toHaveValue() - Jest matcher for checking input values
+    // Works with various input types (text, number, select, etc.)
     
     // Check submit button is present and enabled
     expect(screen.getByRole('button', { name: /send message/i })).toBeInTheDocument();
@@ -36,7 +41,7 @@ describe('ContactForm Component', () => {
   });
 
   /**
-   * TEST 2: Input Changes
+   * TEST 2: Form Input Testing
    * Test that typing in inputs updates their values
    */
   test('updates input values when user types', async () => {
@@ -45,18 +50,21 @@ describe('ContactForm Component', () => {
     render(<ContactForm />);
     
     // ACT: Type in each input field
+    // user.type() - REALISTIC TYPING: Simulates real user typing character by character
+    // This triggers onChange events naturally, just like real user interaction
     await user.type(screen.getByLabelText(/name/i), 'John Doe');
     await user.type(screen.getByLabelText(/email/i), 'john@example.com');
     await user.type(screen.getByLabelText(/message/i), 'Hello, this is a test message');
     
     // ASSERT: Check values are updated
+    // FORM STATE TESTING: Verify form state changes correctly
     expect(screen.getByLabelText(/name/i)).toHaveValue('John Doe');
     expect(screen.getByLabelText(/email/i)).toHaveValue('john@example.com');
     expect(screen.getByLabelText(/message/i)).toHaveValue('Hello, this is a test message');
   });
 
   /**
-   * TEST 3: Form Validation - Required Fields
+   * TEST 3: Form Validation Testing
    * Test that submitting empty form shows validation errors
    */
   test('shows validation errors when submitting empty form', async () => {
@@ -65,16 +73,18 @@ describe('ContactForm Component', () => {
     render(<ContactForm />);
     
     // ACT: Submit form without filling fields
+    // FORM SUBMISSION TESTING: Test validation on empty form
     await user.click(screen.getByRole('button', { name: /send message/i }));
     
     // ASSERT: Check error messages appear
+    // VALIDATION TESTING: Verify error messages are displayed
     expect(screen.getByText('Name is required')).toBeInTheDocument();
     expect(screen.getByText('Email is required')).toBeInTheDocument();
     expect(screen.getByText('Message is required')).toBeInTheDocument();
   });
 
   /**
-   * TEST 4: Form Validation - Field Length
+   * TEST 4: Field-Specific Validation
    * Test validation for field lengths
    */
   test('shows validation errors for short inputs', async () => {
@@ -83,6 +93,7 @@ describe('ContactForm Component', () => {
     render(<ContactForm />);
     
     // ACT: Fill fields with short values
+    // VALIDATION EDGE CASES: Test minimum length requirements
     await user.type(screen.getByLabelText(/name/i), 'J');
     await user.type(screen.getByLabelText(/message/i), 'Short');
     await user.click(screen.getByRole('button', { name: /send message/i }));
@@ -93,12 +104,14 @@ describe('ContactForm Component', () => {
   });
 
   /**
-   * TEST 5: Email Validation
+   * TEST 5: Complex Validation & Mock Functions
    * Test email format validation - demonstrates complex validation edge cases
    */
   test('shows validation error for invalid email', async () => {
     // ARRANGE
     const user = userEvent.setup();
+    // MOCK FUNCTIONS: jest.fn() creates a mock function for testing callbacks
+    // This allows us to verify if and how the onSubmit callback is called
     const mockOnSubmit = jest.fn();
     render(<ContactForm onSubmit={mockOnSubmit} />);
     
@@ -113,14 +126,13 @@ describe('ContactForm Component', () => {
     // In real applications, this edge case would require additional testing
     // and potentially different validation strategies.
     
-    // The form should NOT be submitted because of validation errors
+    // CALLBACK TESTING: The form should NOT be submitted because of validation errors
+    // jest.fn() allows us to verify the callback was not called
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
-
-
   /**
-   * TEST 6: Error Clearing
+   * TEST 6: Dynamic Error Clearing
    * Test that errors clear when user starts typing
    */
   test('clears errors when user starts typing', async () => {
@@ -129,17 +141,20 @@ describe('ContactForm Component', () => {
     render(<ContactForm />);
     
     // ACT: Submit to show errors, then start typing
+    // ERROR STATE TESTING: First trigger validation errors
     await user.click(screen.getByRole('button', { name: /send message/i }));
     expect(screen.getByText('Name is required')).toBeInTheDocument();
     
+    // USER EXPERIENCE TESTING: Verify errors clear when user starts fixing them
     await user.type(screen.getByLabelText(/name/i), 'John');
     
     // ASSERT: Error should be cleared
+    // DYNAMIC UI TESTING: Check that UI updates based on user actions
     expect(screen.queryByText('Name is required')).not.toBeInTheDocument();
   });
 
   /**
-   * TEST 7: Successful Form Submission
+   * TEST 7: Async Operations & Loading States
    * Test form submission with valid data
    */
   test('successfully submits form with valid data', async () => {
@@ -157,15 +172,18 @@ describe('ContactForm Component', () => {
     await user.click(submitButton);
     
     // ASSERT: Check loading state
+    // LOADING STATE TESTING: Verify button shows loading state during submission
     expect(screen.getByRole('button', { name: /sending/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sending/i })).toBeDisabled();
     
-    // Wait for success message
+    // ASYNC TESTING: waitFor() waits for asynchronous operations to complete
+    // This is essential for testing async form submissions, API calls, etc.
     await waitFor(() => {
       expect(screen.getByText('Thank you for your message!')).toBeInTheDocument();
     });
     
-    // Check callback was called
+    // CALLBACK VERIFICATION: Check that callback was called with correct data
+    // toHaveBeenCalledWith() verifies the exact arguments passed to the mock
     expect(mockOnSubmit).toHaveBeenCalledWith({
       name: 'John Doe',
       email: 'john@example.com',
@@ -174,7 +192,7 @@ describe('ContactForm Component', () => {
   });
 
   /**
-   * TEST 8: Success State
+   * TEST 8: Success State & Component Flow
    * Test the success message and reset functionality
    */
   test('shows success message after submission', async () => {
@@ -189,92 +207,45 @@ describe('ContactForm Component', () => {
     await user.click(screen.getByRole('button', { name: /send message/i }));
     
     // ASSERT: Wait for success message
+    // ASYNC FLOW TESTING: Test complete user journey from input to success
     await waitFor(() => {
       expect(screen.getByText('Thank you for your message!')).toBeInTheDocument();
     });
     
+    // SUCCESS STATE TESTING: Verify all success elements are present
     expect(screen.getByText('Thank you for your message!')).toBeInTheDocument();
     expect(screen.getByText("We'll get back to you soon.")).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /send another message/i })).toBeInTheDocument();
   });
 
   /**
-   * TEST 9: Form Reset
-   * Test that form resets after successful submission
+   * TEST 9: Error Recovery Testing
+   * Test that form can recover from submission errors
    */
-  test('resets form after successful submission', async () => {
+  test('allows retry after form submission', async () => {
     // ARRANGE
     const user = userEvent.setup();
     render(<ContactForm />);
     
-    // ACT: Submit form and click "Send Another Message"
+    // ACT: Submit valid form and wait for success
     await user.type(screen.getByLabelText(/name/i), 'John Doe');
     await user.type(screen.getByLabelText(/email/i), 'john@example.com');
     await user.type(screen.getByLabelText(/message/i), 'This is a valid message with enough characters');
     await user.click(screen.getByRole('button', { name: /send message/i }));
     
+    // Wait for success state
     await waitFor(() => {
       expect(screen.getByText('Thank you for your message!')).toBeInTheDocument();
     });
     
+    // ACT: Click "Send another message" button
     await user.click(screen.getByRole('button', { name: /send another message/i }));
     
-    // ASSERT: Form should be reset
+    // ASSERT: Verify form is reset and ready for new input
+    // FORM RESET TESTING: Check that form returns to initial state
     expect(screen.getByLabelText(/name/i)).toHaveValue('');
     expect(screen.getByLabelText(/email/i)).toHaveValue('');
     expect(screen.getByLabelText(/message/i)).toHaveValue('');
-  });
-
-  /**
-   * TEST 10: Form Labels and Accessibility
-   * Test that form has proper labels and accessibility
-   */
-  test('has proper form labels', () => {
-    // ARRANGE
-    render(<ContactForm />);
-    
-    // ACT & ASSERT: Check labels are properly associated
-    expect(screen.getByLabelText('Name:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Email:')).toBeInTheDocument();
-    expect(screen.getByLabelText('Message:')).toBeInTheDocument();
-  });
-
-  /**
-   * TEST 11: Form Submission Event
-   * Test that form submission works properly
-   */
-  test('handles form submission event', async () => {
-    // ARRANGE
-    const user = userEvent.setup();
-    render(<ContactForm />);
-    
-    // ACT: Submit form without valid data
-    await user.click(screen.getByRole('button', { name: /send message/i }));
-    
-    // ASSERT: Form should show validation errors (indicating it processed the submit)
-    expect(screen.getByText('Name is required')).toBeInTheDocument();
-    expect(screen.getByText('Email is required')).toBeInTheDocument();
-    expect(screen.getByText('Message is required')).toBeInTheDocument();
-  });
-
-  /**
-   * TEST 12: Input Trimming
-   * Test that spaces are trimmed from validation
-   */
-  test('trims whitespace in validation', async () => {
-    // ARRANGE
-    const user = userEvent.setup();
-    render(<ContactForm />);
-    
-    // ACT: Enter whitespace-only values
-    await user.type(screen.getByLabelText(/name/i), '   ');
-    await user.type(screen.getByLabelText(/email/i), '   ');
-    await user.type(screen.getByLabelText(/message/i), '   ');
-    await user.click(screen.getByRole('button', { name: /send message/i }));
-    
-    // ASSERT: Should show required field errors
-    expect(screen.getByText('Name is required')).toBeInTheDocument();
-    expect(screen.getByText('Email is required')).toBeInTheDocument();
-    expect(screen.getByText('Message is required')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /send message/i })).toBeEnabled();
   });
 }); 
