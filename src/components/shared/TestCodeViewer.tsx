@@ -109,10 +109,10 @@ const TestCodeViewer: React.FC<TestCodeViewerProps> = ({ testCode, componentCode
 
   // Highlight test code with test-specific keywords
   const highlightTestCode = (code: string) => {
-    const testKeywords = [
-      'describe', 'test', 'it', 'expect', 'render', 'screen', 'fireEvent', 'userEvent',
-      'beforeEach', 'afterEach', 'jest', 'mock', 'import', 'from', 'const', 'let', 'var'
-    ];
+      const testKeywords = [
+    'describe', 'test', 'it', 'expect', 'render', 'screen', 'userEvent',
+    'beforeEach', 'afterEach', 'jest', 'mock', 'import', 'from', 'const', 'let', 'var'
+  ];
 
     const testMethods = [
       'getByText', 'getByRole', 'toBeInTheDocument', 'toHaveTextContent', 

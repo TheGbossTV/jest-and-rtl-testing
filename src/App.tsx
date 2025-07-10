@@ -122,9 +122,8 @@ const exampleCategories: Record<ExampleCategory, ExampleInfo> = {
     description: 'Event handling, state management, and user interactions',
     concepts: [
       'State management testing',
-      'Event handling with fireEvent',
-      'Form validation and submission',
       'User interactions with userEvent',
+      'Form validation and submission',
       'Loading states and async forms',
       'Error handling and validation'
     ]
