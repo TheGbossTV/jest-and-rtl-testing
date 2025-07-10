@@ -1,12 +1,13 @@
 /**
- * Test Code Data
+ * Test Code and Component Code Data
  * 
- * This file contains all the test code strings for each component.
- * The test code is stored as strings to be displayed in the TestCodeViewer component.
+ * This file contains both test code and component source code for each component.
+ * The code is stored as strings to be displayed in the dual-panel TestCodeViewer component.
  */
 
-export const testCodeData = {
-  Greeting: `/**
+export const codeData = {
+  Greeting: {
+    testCode: `/**
  * EASY EXAMPLE 1: Basic Component Testing
  * 
  * This test file demonstrates fundamental React Testing Library concepts:
@@ -81,12 +82,44 @@ describe('Greeting Component', () => {
     expect(screen.getByText('Hello, Bob!')).toBeInTheDocument();
     expect(screen.getByText('Welcome to our testing tutorial.')).toBeInTheDocument();
     
-    // We can also check that certain text is NOT present
-    expect(screen.queryByText('Hello, World!')).not.toBeInTheDocument();
-  });
-});`,
+         // We can also check that certain text is NOT present
+     expect(screen.queryByText('Hello, World!')).not.toBeInTheDocument();
+   });
+ });`,
+    componentCode: `/**
+ * EASY EXAMPLE 1: Simple Greeting Component
+ */
 
-  UserCard: `/**
+interface GreetingProps {
+  name?: string;
+}
+
+const Greeting: React.FC<GreetingProps> = ({ name = 'World' }) => {
+  return (
+    <div className="component-with-tests">
+      <div className="component-demo">
+        <h1>Hello, {name}!</h1>
+        <p>Welcome to our testing tutorial.</p>
+      </div>
+      
+      <div className="test-coverage">
+        <h4>🧪 Tests Covered:</h4>
+        <ul>
+          <li>✅ Renders with correct name</li>
+          <li>✅ Uses default name when not provided</li>
+          <li>✅ Displays proper HTML structure</li>
+          <li>✅ Shows welcome message correctly</li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default Greeting;`
+  },
+
+  UserCard: {
+    testCode: `/**
  * EASY EXAMPLE 2: Testing Props and Conditional Rendering
  * 
  * This test file demonstrates:
@@ -173,12 +206,57 @@ describe('UserCard Component', () => {
     
     // ACT & ASSERT: Check CSS classes on the container
     const container = screen.getByText('Test User').closest('.user-card');
-    expect(container).toHaveClass('user-card', 'active');
-    expect(container).not.toHaveClass('inactive');
-  });
-});`,
+         expect(container).toHaveClass('user-card', 'active');
+     expect(container).not.toHaveClass('inactive');
+   });
+ });`,
+    componentCode: `/**
+ * EASY EXAMPLE 2: User Card Component with Conditional Rendering
+ */
 
-  ItemList: `/**
+interface UserCardProps {
+  name: string;
+  email?: string;
+  age?: number;
+  isActive?: boolean;
+}
+
+const UserCard: React.FC<UserCardProps> = ({ 
+  name, 
+  email, 
+  age, 
+  isActive = true 
+}) => {
+  return (
+    <div className="component-with-tests">
+      <div className="component-demo">
+        <div className={\`user-card \${isActive ? 'active' : 'inactive'}\`}>
+          <h2>{name}</h2>
+          
+          {email && (
+            <p><strong>Email:</strong> {email}</p>
+          )}
+          
+          {age && (
+            <p><strong>Age:</strong> {age} years old</p>
+          )}
+          
+          <div className="status">
+            <span className={\`status-indicator \${isActive ? 'active' : 'inactive'}\`}>
+              {isActive ? '🟢 Active' : '🔴 Inactive'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UserCard;`
+  },
+
+  ItemList: {
+    testCode: `/**
  * EASY EXAMPLE 3: Testing List Rendering
  * 
  * This test file demonstrates:
@@ -253,11 +331,54 @@ describe('ItemList Component', () => {
     const componentOutput = screen.getByText(customTitle).closest('.component-output');
     expect(componentOutput).not.toBeNull();
     const heading = componentOutput!.querySelector('h3');
-    expect(heading).toHaveTextContent(customTitle);
-  });
-});`,
+         expect(heading).toHaveTextContent(customTitle);
+   });
+ });`,
+    componentCode: `/**
+ * EASY EXAMPLE 3: Item List Component with Array Rendering
+ */
 
-  Counter: `/**
+interface ItemListProps {
+  items: string[];
+  title?: string;
+  emptyMessage?: string;
+}
+
+const ItemList: React.FC<ItemListProps> = ({ 
+  items, 
+  title = "Items", 
+  emptyMessage = "No items to display" 
+}) => {
+  return (
+    <div className="component-with-tests">
+      <div className="component-demo">
+        <div className="item-list">
+          <h3>{title}</h3>
+          
+          {items.length === 0 ? (
+            <p className="empty-message">{emptyMessage}</p>
+          ) : (
+            <ul>
+              {items.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          )}
+          
+          <div className="item-count">
+            Total items: {items.length}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ItemList;`
+  },
+
+  Counter: {
+    testCode: `/**
  * MEDIUM EXAMPLE 1: Testing State Management and User Interactions
  * 
  * This test file demonstrates:
@@ -348,11 +469,89 @@ describe('Counter Component', () => {
     
     // ACT & ASSERT: Increment button should be disabled
     const incrementButton = screen.getByRole('button', { name: /increase count/i });
-    expect(incrementButton).toBeDisabled();
-  });
-});`,
+         expect(incrementButton).toBeDisabled();
+   });
+ });`,
+    componentCode: `/**
+ * MEDIUM EXAMPLE 1: Counter Component with State Management
+ */
 
-  ContactForm: `/**
+import { useState } from 'react';
+
+interface CounterProps {
+  initialCount?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+const Counter: React.FC<CounterProps> = ({
+  initialCount = 0,
+  min = Number.MIN_SAFE_INTEGER,
+  max = Number.MAX_SAFE_INTEGER,
+  step = 1
+}) => {
+  const [count, setCount] = useState(initialCount);
+
+  const increment = () => {
+    setCount(prevCount => Math.min(prevCount + step, max));
+  };
+
+  const decrement = () => {
+    setCount(prevCount => Math.max(prevCount - step, min));
+  };
+
+  const reset = () => {
+    setCount(initialCount);
+  };
+
+  const canIncrement = count < max;
+  const canDecrement = count > min;
+
+  return (
+    <div className="component-with-tests">
+      <div className="component-demo">
+        <div className="counter">
+          <h2>Counter</h2>
+          <div className="counter-display">{count}</div>
+          
+          <div className="counter-controls">
+            <button
+              onClick={decrement}
+              disabled={!canDecrement}
+              aria-label="Decrease count"
+            >
+              -
+            </button>
+            
+            <button onClick={reset} aria-label="Reset count">
+              Reset
+            </button>
+            
+            <button
+              onClick={increment}
+              disabled={!canIncrement}
+              aria-label="Increase count"
+            >
+              +
+            </button>
+          </div>
+          
+          <div className="counter-info">
+            <p>Range: {min} to {max}</p>
+            <p>Step: {step}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Counter;`
+  },
+
+  ContactForm: {
+    testCode: `/**
  * MEDIUM EXAMPLE 2: Testing Form Handling and User Input
  * 
  * This test file demonstrates:
@@ -457,12 +656,148 @@ describe('ContactForm Component', () => {
     expect(mockOnSubmit).toHaveBeenCalledWith({
       name: 'John Doe',
       email: 'john@example.com',
-      message: 'This is a valid message with enough characters'
-    });
-  });
-});`,
+             message: 'This is a valid message with enough characters'
+     });
+   });
+ });`,
+    componentCode: `/**
+ * MEDIUM EXAMPLE 2: Contact Form with Validation and State Management
+ */
 
-  UserList: `/**
+import { useState } from 'react';
+
+interface ContactFormProps {
+  onSubmit?: (data: FormData) => void;
+}
+
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const validateForm = (): FormErrors => {
+    const newErrors: FormErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!formData.email.includes('@') || !formData.email.includes('.')) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+    }
+
+    return newErrors;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const newErrors = validateForm();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setIsSubmitting(true);
+      
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setIsSubmitted(true);
+        onSubmit?.(formData);
+        setFormData({ name: '', email: '', message: '' });
+      }, 1000);
+    }
+  };
+
+  if (isSubmitted) {
+    return (
+      <div className="success-message">
+        <h3>Thank you for your message!</h3>
+        <p>We'll get back to you soon.</p>
+        <button onClick={() => setIsSubmitted(false)}>
+          Send Another Message
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="contact-form">
+      <h2>Contact Us</h2>
+      
+      <div className="form-group">
+        <label htmlFor="name">Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value={formData.name}
+          onChange={(e) => setFormData({...formData, name: e.target.value})}
+        />
+        {errors.name && <span className="error-message">{errors.name}</span>}
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="email">Email:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={formData.email}
+          onChange={(e) => setFormData({...formData, email: e.target.value})}
+        />
+        {errors.email && <span className="error-message">{errors.email}</span>}
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="message">Message:</label>
+        <textarea
+          id="message"
+          name="message"
+          value={formData.message}
+          onChange={(e) => setFormData({...formData, message: e.target.value})}
+        />
+        {errors.message && <span className="error-message">{errors.message}</span>}
+      </div>
+
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Sending...' : 'Send Message'}
+      </button>
+    </form>
+  );
+};
+
+export default ContactForm;`
+  },
+
+  UserList: {
+    testCode: `/**
  * HARD EXAMPLE 1: Testing Data Fetching and Async Operations
  * 
  * This test file demonstrates:
@@ -588,11 +923,107 @@ describe('UserList Component', () => {
     });
 
     // Check empty state
-    expect(screen.getByText('0 users found')).toBeInTheDocument();
-  });
-});`,
+         expect(screen.getByText('0 users found')).toBeInTheDocument();
+   });
+ });`,
+    componentCode: `/**
+ * HARD EXAMPLE 1: User List with Async Data Fetching and Error Handling
+ */
 
-  SearchFilter: `/**
+import { useState, useEffect } from 'react';
+import type { User } from '../../services/userService';
+import { userService } from '../../services/userService';
+
+interface UserListProps {
+  apiUrl?: string;
+}
+
+const UserList: React.FC<UserListProps> = ({ 
+  apiUrl = 'https://jsonplaceholder.typicode.com/users' 
+}) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const userData = await userService.fetchUsers(apiUrl);
+        
+        if (!controller.signal.aborted) {
+          setUsers(userData);
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch users');
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchUsers();
+
+    return () => {
+      controller.abort();
+    };
+  }, [apiUrl]);
+
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
+  if (loading) {
+    return (
+      <div className="user-list">
+        <h2>Users</h2>
+        <div className="loading">Loading users...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="user-list">
+        <h2>Users</h2>
+        <div className="error">Error: {error}</div>
+        <button onClick={handleRetry} className="retry-button">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="user-list">
+      <h2>Users</h2>
+      <div className="user-count">{users.length} users found</div>
+      
+      <div className="users">
+        {users.map(user => (
+          <div key={user.id} className="user-card">
+            <h3>{user.name}</h3>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Username:</strong> {user.username}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default UserList;`
+  },
+
+  SearchFilter: {
+    testCode: `/**
  * HARD EXAMPLE 2: Testing Complex Search and Filter Component
  * 
  * This test file demonstrates advanced testing concepts:
@@ -757,9 +1188,179 @@ describe('SearchFilter Component', () => {
     jest.advanceTimersByTime(100);
 
     // ASSERT
-    await waitFor(() => {
-      expect(screen.getByText('Searching...')).toBeInTheDocument();
-    });
+         await waitFor(() => {
+       expect(screen.getByText('Searching...')).toBeInTheDocument();
+     });
+   });
+ });`,
+    componentCode: `/**
+ * HARD EXAMPLE 2: Advanced Search Filter with Debouncing and Complex Interactions
+ */
+
+import { useState, useEffect, useCallback } from 'react';
+
+export interface SearchResult {
+  id: string;
+  title: string;
+  category: string;
+  price: number;
+  description: string;
+  inStock: boolean;
+}
+
+export interface SearchFilters {
+  category: string;
+  minPrice: number;
+  maxPrice: number;
+  inStockOnly: boolean;
+}
+
+interface SearchFilterProps {
+  onResultsChange?: (results: SearchResult[]) => void;
+  placeholder?: string;
+  debounceMs?: number;
+  maxResults?: number;
+}
+
+export const SearchFilter: React.FC<SearchFilterProps> = ({
+  onResultsChange,
+  placeholder = "Search products...",
+  debounceMs = 300,
+  maxResults = 10
+}) => {
+  const [query, setQuery] = useState('');
+  const [filters, setFilters] = useState<SearchFilters>({
+    category: '',
+    minPrice: 0,
+    maxPrice: 10000,
+    inStockOnly: false
   });
-});`
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const debouncedSearch = useCallback(async (searchQuery: string, searchFilters: SearchFilters) => {
+    if (searchQuery.trim() === '') {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const mockResults: SearchResult[] = [
+        { id: '1', title: 'Laptop Pro', category: 'electronics', price: 1299.99, description: 'High-performance laptop', inStock: true },
+        { id: '2', title: 'Coffee Maker', category: 'appliances', price: 89.99, description: 'Automatic coffee maker', inStock: false }
+      ];
+      
+      const filteredResults = mockResults.filter(item => {
+        const matchesQuery = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = searchFilters.category === '' || item.category === searchFilters.category;
+        const matchesPriceRange = item.price >= searchFilters.minPrice && item.price <= searchFilters.maxPrice;
+        const matchesStock = !searchFilters.inStockOnly || item.inStock;
+        
+        return matchesQuery && matchesCategory && matchesPriceRange && matchesStock;
+      });
+      
+      setResults(filteredResults.slice(0, maxResults));
+      onResultsChange?.(filteredResults);
+    } catch (err) {
+      setError('Search failed');
+    } finally {
+      setLoading(false);
+    }
+  }, [maxResults, onResultsChange]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      debouncedSearch(query, filters);
+    }, debounceMs);
+
+    return () => clearTimeout(timeoutId);
+  }, [query, filters, debouncedSearch, debounceMs]);
+
+  const handleClearAll = () => {
+    setQuery('');
+    setFilters({
+      category: '',
+      minPrice: 0,
+      maxPrice: 10000,
+      inStockOnly: false
+    });
+    setResults([]);
+    setError(null);
+  };
+
+  return (
+    <div className="search-filter">
+      <div className="search-controls">
+        <input
+          type="text"
+          placeholder={placeholder}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+
+        <select
+          value={filters.category}
+          onChange={(e) => setFilters({...filters, category: e.target.value})}
+          aria-label="Category:"
+        >
+          <option value="">All Categories</option>
+          <option value="electronics">Electronics</option>
+          <option value="appliances">Appliances</option>
+          <option value="sports">Sports</option>
+        </select>
+
+        <input
+          type="number"
+          placeholder="Min Price"
+          value={filters.minPrice}
+          onChange={(e) => setFilters({...filters, minPrice: Number(e.target.value)})}
+          aria-label="Min Price:"
+        />
+
+        <input
+          type="number"
+          placeholder="Max Price"
+          value={filters.maxPrice}
+          onChange={(e) => setFilters({...filters, maxPrice: Number(e.target.value)})}
+          aria-label="Max Price:"
+        />
+
+        <label>
+          <input
+            type="checkbox"
+            checked={filters.inStockOnly}
+            onChange={(e) => setFilters({...filters, inStockOnly: e.target.checked})}
+          />
+          In Stock Only
+        </label>
+
+        <button onClick={handleClearAll}>Clear All</button>
+      </div>
+
+      {loading && <div>Searching...</div>}
+      {error && <div>Error: {error}</div>}
+      
+      <div className="search-results">
+        {results.map(item => (
+          <div key={item.id} className="result-item">
+            <h4>{item.title}</h4>
+            <p>{item.description}</p>
+            <p>Price: $\{item.price}</p>
+            <p>Category: {item.category}</p>
+            <p>In Stock: {item.inStock ? 'Yes' : 'No'}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};`
+  }
 }; 

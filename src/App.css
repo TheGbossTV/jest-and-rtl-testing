@@ -997,7 +997,6 @@ body {
 
 .test-code-body {
   flex: 1;
-  overflow: auto;
   padding: 0;
 }
 
@@ -1106,6 +1105,17 @@ body {
   color: #d4d4d4;
 }
 
+/* JSX-specific highlighting */
+.test-code-text .jsx-tag {
+  color: #4fc1ff;
+  font-weight: bold;
+}
+
+.test-code-text .jsx-attribute {
+  color: #92c5f7;
+  font-style: italic;
+}
+
 .test-code-footer {
   padding: 12px 20px;
   background: #2d2d30;
@@ -1117,6 +1127,89 @@ body {
   margin: 0;
   font-size: 14px;
   color: #cccccc;
+}
+
+/* Dual Panel Layout */
+.code-panels {
+  display: flex;
+  gap: 1px;
+  height: 100%;
+  background: #2d3748;
+}
+
+.code-panel {
+  flex: 1;
+  background: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Allow panels to shrink */
+}
+
+.panel-header {
+  background: #2d3748;
+  color: #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.panel-header h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+/* Adjust container for dual panels */
+.code-panel .test-code-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  max-height: 600px; /* Set a fixed height for scrolling */
+}
+
+/* Each panel should scroll independently */
+.code-panel .test-code-container .test-code-text {
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 600px;
+}
+
+/* Custom scrollbar for each panel */
+.code-panel .test-code-container .test-code-text::-webkit-scrollbar {
+  width: 12px;
+}
+
+.code-panel .test-code-container .test-code-text::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.code-panel .test-code-container .test-code-text::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 6px;
+}
+
+.code-panel .test-code-container .test-code-text::-webkit-scrollbar-thumb:hover {
+  background: #4f4f4f;
+}
+
+/* Mobile responsiveness for dual panels */
+@media (max-width: 768px) {
+  .code-panels {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .code-panel {
+    min-height: 300px;
+  }
+  
+  .panel-header h4 {
+    font-size: 0.8rem;
+  }
 }
 
 .example-section {

@@ -19,7 +19,7 @@ import SectionInfo from './components/shared/SectionInfo';
 import TestCodeViewer from './components/shared/TestCodeViewer';
 
 // Test Code Data
-import { testCodeData } from './data/testCodeData';
+import { codeData } from './data/testCodeData';
 
 /**
  * MAIN APP COMPONENT
@@ -106,7 +106,8 @@ function App() {
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
-                    testCode={testCodeData.Greeting} 
+                    testCode={codeData.Greeting.testCode} 
+                    componentCode={codeData.Greeting.componentCode}
                     componentName="Greeting"
                   />
                 </div>
@@ -135,7 +136,8 @@ function App() {
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
-                    testCode={testCodeData.UserCard} 
+                    testCode={codeData.UserCard.testCode} 
+                    componentCode={codeData.UserCard.componentCode}
                     componentName="UserCard"
                   />
                 </div>
@@ -164,7 +166,8 @@ function App() {
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
-                    testCode={testCodeData.ItemList} 
+                    testCode={codeData.ItemList.testCode} 
+                    componentCode={codeData.ItemList.componentCode}
                     componentName="ItemList"
                   />
                 </div>
@@ -191,7 +194,8 @@ function App() {
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
-                    testCode={testCodeData.Counter} 
+                    testCode={codeData.Counter.testCode} 
+                    componentCode={codeData.Counter.componentCode}
                     componentName="Counter"
                   />
                 </div>
@@ -209,7 +213,8 @@ function App() {
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
-                    testCode={testCodeData.ContactForm} 
+                    testCode={codeData.ContactForm.testCode} 
+                    componentCode={codeData.ContactForm.componentCode}
                     componentName="ContactForm"
                   />
                 </div>
@@ -234,7 +239,8 @@ function App() {
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
-                    testCode={testCodeData.UserList} 
+                    testCode={codeData.UserList.testCode} 
+                    componentCode={codeData.UserList.componentCode}
                     componentName="UserList"
                   />
                 </div>
@@ -257,7 +263,8 @@ function App() {
                 </div>
                 <div className="example-test-button">
                   <TestCodeViewer 
-                    testCode={testCodeData.SearchFilter} 
+                    testCode={codeData.SearchFilter.testCode} 
+                    componentCode={codeData.SearchFilter.componentCode}
                     componentName="SearchFilter"
                   />
                 </div>
