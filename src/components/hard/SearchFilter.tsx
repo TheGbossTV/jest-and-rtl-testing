@@ -34,16 +34,16 @@ import { useState, useEffect, useCallback } from 'react';
  * ✅ Performance optimizations don't break functionality
  * 
  * TESTING CONCEPTS DEMONSTRATED:
- * - Testing debounced functionality with fake timers
- * - Complex async operation testing with waitFor()
- * - Testing multiple interactive elements simultaneously
+ * - Testing debounced functionality with RTL's natural timing (findBy, waitFor)
+ * - Complex async operation testing using RTL's async utilities
+ * - Testing multiple interactive elements simultaneously with userEvent
  * - Advanced mocking of API services and async functions
  * - Testing error handling and retry mechanisms
- * - Testing performance optimizations (useCallback, debouncing)
- * - Testing complex user workflows and interactions
+ * - Testing performance optimizations without relying on act() calls
+ * - Testing complex user workflows with realistic interactions
  * - Testing request cancellation and cleanup
  * - Testing component state management under complex conditions
- * - Advanced testing patterns for real-world scenarios
+ * - RTL-focused testing patterns for real-world scenarios
  */
 
 export interface SearchResult {

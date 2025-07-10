@@ -24,12 +24,12 @@
  * ✅ Renders proper HTML structure (ul, li elements)
  * 
  * TESTING CONCEPTS DEMONSTRATED:
- * - Testing list rendering with getAllByTestId()
+ * - Testing list rendering with querySelector and DOM traversal
  * - Testing empty states vs populated states
- * - Testing array length and content
+ * - Testing array length and content validation
  * - Testing conditional rendering (empty vs list)
  * - Testing custom vs default prop values
- * - Using semantic queries and roles for reliable element selection
+ * - Using closest() to isolate component demo areas from educational content
  */
 
 interface ItemListProps {

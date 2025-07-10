@@ -24,11 +24,11 @@
  * 
  * TESTING CONCEPTS DEMONSTRATED:
  * - Testing conditional rendering with different prop combinations
- * - Using getByTestId() for reliable element selection
- * - Testing CSS classes and styling
- * - Testing default prop values
+ * - Using regex patterns for flexible text matching across HTML elements
+ * - Testing CSS classes and dynamic styling
+ * - Testing default prop values and edge cases
  * - Testing with and without optional props
- * - Using getByText() for text content verification
+ * - Using getByText() and role queries for text content verification
  */
 
 interface UserCardProps {

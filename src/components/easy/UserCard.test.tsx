@@ -2,11 +2,11 @@
  * EASY EXAMPLE 2: Testing Props and Conditional Rendering
  * 
  * This test file demonstrates:
- * - Testing components with multiple props
- * - Testing conditional rendering
- * - Using data-testid for reliable element selection
- * - Testing CSS classes
- * - Testing default prop values
+ * - Testing components with multiple props and optional values
+ * - Testing conditional rendering based on prop availability
+ * - Using regex patterns for flexible text matching across HTML elements
+ * - Testing CSS classes and dynamic styling
+ * - Testing default prop values and edge cases
  */
 
 import { render, screen } from '@testing-library/react';

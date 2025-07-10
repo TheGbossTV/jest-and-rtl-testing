@@ -1,13 +1,13 @@
 /**
- * HARD EXAMPLE 2: Testing Complex Search and Filter Component
+ * HARD EXAMPLE 2: Testing Complex Search and Filter Component with RTL
  * 
- * This test file demonstrates advanced testing concepts:
- * - Testing debounced user input
- * - Mocking complex async operations
- * - Testing multiple interactive filters
- * - Testing error handling and retry mechanisms
- * - Testing performance optimizations
- * - Testing complex state management
+ * This test file demonstrates advanced RTL testing patterns:
+ * - Testing debounced user input using findBy queries and natural timing
+ * - Using waitFor and findBy instead of manual timer control
+ * - Testing multiple interactive filters with realistic user interactions
+ * - Avoiding act() calls in favor of RTL's built-in async utilities
+ * - Testing loading states using natural element appearance/disappearance
+ * - Complex user interactions with proper async handling
  */
 
 /// <reference types="@testing-library/jest-dom" />
@@ -62,8 +62,8 @@ describe('SearchFilter Component', () => {
   });
 
   /**
-   * TEST 3: Debouncing
-   * Test that search is debounced to avoid excessive API calls
+   * TEST 3: Debouncing with RTL
+   * Test debounced search using findBy to wait for natural loading state appearance
    */
   test('debounces search input', async () => {
     // ARRANGE
@@ -143,8 +143,8 @@ describe('SearchFilter Component', () => {
   });
 
   /**
-   * TEST 6: Loading States
-   * Test that loading states are properly displayed
+   * TEST 6: Loading States with Natural Timing
+   * Test loading states using RTL's findBy instead of manual timer control
    */
   test('shows loading state during search', async () => {
     // ARRANGE

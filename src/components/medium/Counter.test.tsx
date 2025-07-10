@@ -2,11 +2,11 @@
  * MEDIUM EXAMPLE 1: Testing State Management and User Interactions
  * 
  * This test file demonstrates:
- * - Testing user interactions with fireEvent
+ * - Testing user interactions with fireEvent (note: userEvent is preferred for modern tests)
  * - Testing state changes and updates
- * - Testing disabled states
- * - Testing edge cases and boundaries
- * - Testing component re-renders
+ * - Testing disabled states and boundary conditions
+ * - Testing edge cases and input validation
+ * - Testing component re-renders and prop effects
  */
 
 /// <reference types="@testing-library/jest-dom" />

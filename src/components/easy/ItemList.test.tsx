@@ -3,10 +3,10 @@
  * 
  * This test file demonstrates:
  * - Testing components that render lists
- * - Testing empty states
- * - Using getAllByTestId() for multiple elements
- * - Testing array lengths and content
- * - Testing default props
+ * - Testing empty states vs populated states
+ * - Using querySelector to verify list structure within component demo areas
+ * - Testing array lengths and content validation
+ * - Testing custom vs default prop values
  */
 
 import { render, screen } from '@testing-library/react';
