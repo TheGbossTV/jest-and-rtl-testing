@@ -19,7 +19,7 @@ const TestCodeViewer: React.FC<TestCodeViewerProps> = ({ testCode, componentName
     setIsVisible(!isVisible);
   };
 
-  // Simple and safe syntax highlighting
+  // Simple and safe syntax highlighting with comment precedence
   const highlightCode = (code: string) => {
     // Escape HTML entities first
     const escaped = code
@@ -31,20 +31,27 @@ const TestCodeViewer: React.FC<TestCodeViewerProps> = ({ testCode, componentName
 
     let result = escaped;
 
-    // Only highlight obvious patterns that won't conflict
-    // Highlight single-line comments
-    result = result.replace(
-      /\/\/.*$/gm,
-      '<span class="comment">$&</span>'
-    );
+    // Step 1: Mark comments with special placeholders to protect them
+    const commentPlaceholders: string[] = [];
+    let commentIndex = 0;
 
-    // Highlight multi-line comments
-    result = result.replace(
-      /\/\*[\s\S]*?\*\//g,
-      '<span class="comment">$&</span>'
-    );
+    // Replace multi-line comments with placeholders
+    result = result.replace(/\/\*[\s\S]*?\*\//g, (match) => {
+      const placeholder = `__COMMENT_${commentIndex}__`;
+      commentPlaceholders[commentIndex] = `<span class="comment">${match}</span>`;
+      commentIndex++;
+      return placeholder;
+    });
 
-    // Highlight strings (simple patterns only)
+    // Replace single-line comments with placeholders
+    result = result.replace(/\/\/.*$/gm, (match) => {
+      const placeholder = `__COMMENT_${commentIndex}__`;
+      commentPlaceholders[commentIndex] = `<span class="comment">${match}</span>`;
+      commentIndex++;
+      return placeholder;
+    });
+
+    // Step 2: Highlight strings (but only outside comments)
     result = result.replace(
       /&#39;([^&#39;]|\\&#39;)*&#39;/g,
       '<span class="string">$&</span>'
@@ -55,26 +62,55 @@ const TestCodeViewer: React.FC<TestCodeViewerProps> = ({ testCode, componentName
       '<span class="string">$&</span>'
     );
 
-    // Highlight specific testing keywords only
+    // Step 3: Highlight keywords (but only outside comments and strings)
     const testKeywords = [
       'describe', 'test', 'it', 'expect', 'render', 'screen', 'fireEvent', 'userEvent',
       'beforeEach', 'afterEach', 'jest', 'mock', 'import', 'from', 'const', 'let'
     ];
 
     testKeywords.forEach(keyword => {
-      const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-      result = result.replace(regex, `<span class="keyword">${keyword}</span>`);
+      // Only highlight if not inside a span (string) and not a comment placeholder
+      const regex = new RegExp(`\\b${keyword}\\b(?![^<]*</span>)(?!.*__COMMENT_)`, 'g');
+      result = result.replace(regex, (match, offset, string) => {
+        // Additional check: don't highlight if we're inside a string span
+        const beforeMatch = string.substring(0, offset);
+        const lastSpanStart = beforeMatch.lastIndexOf('<span class="string">');
+        const lastSpanEnd = beforeMatch.lastIndexOf('</span>');
+        
+        if (lastSpanStart > lastSpanEnd) {
+          return match; // We're inside a string span
+        }
+        
+        return `<span class="keyword">${keyword}</span>`;
+      });
     });
 
-    // Highlight common testing methods
+    // Step 4: Highlight methods (but only outside comments and strings)
     const testMethods = [
       'getByText', 'getByRole', 'toBeInTheDocument', 'toHaveTextContent', 
       'toHaveValue', 'toBeDisabled', 'toBeEnabled', 'click', 'type'
     ];
 
     testMethods.forEach(method => {
-      const regex = new RegExp(`\\b${method}\\b`, 'g');
-      result = result.replace(regex, `<span class="method">${method}</span>`);
+      const regex = new RegExp(`\\b${method}\\b(?![^<]*</span>)(?!.*__COMMENT_)`, 'g');
+      result = result.replace(regex, (match, offset, string) => {
+        // Additional check: don't highlight if we're inside a string span
+        const beforeMatch = string.substring(0, offset);
+        const lastSpanStart = beforeMatch.lastIndexOf('<span class="string">');
+        const lastSpanEnd = beforeMatch.lastIndexOf('</span>');
+        
+        if (lastSpanStart > lastSpanEnd) {
+          return match; // We're inside a string span
+        }
+        
+        return `<span class="method">${method}</span>`;
+      });
+    });
+
+    // Step 5: Restore comments from placeholders
+    commentPlaceholders.forEach((commentHtml, index) => {
+      const placeholder = `__COMMENT_${index}__`;
+      result = result.replace(placeholder, commentHtml);
     });
 
     return result;
