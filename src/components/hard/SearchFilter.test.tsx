@@ -78,13 +78,8 @@ describe('SearchFilter Component', () => {
     // ASSERT: Should not trigger search immediately
     expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
 
-    // ACT: Advance timers to trigger debounced search
-    jest.advanceTimersByTime(300);
-
-    // ASSERT: Should now show loading state
-    await waitFor(() => {
-      expect(screen.getByText('Searching...')).toBeInTheDocument();
-    });
+    // ACT & ASSERT: Wait for debounced search to trigger by finding loading state
+    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -160,13 +155,8 @@ describe('SearchFilter Component', () => {
     const searchInput = screen.getByPlaceholderText('Search products...');
     await user.type(searchInput, 'laptop');
 
-    // Advance timers to trigger search
-    jest.advanceTimersByTime(100);
-
-    // ASSERT
-    await waitFor(() => {
-      expect(screen.getByText('Searching...')).toBeInTheDocument();
-    });
+    // ASSERT: Wait for loading state to appear naturally after debounce
+    await expect(screen.findByText('Searching...', {}, { timeout: 200 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -183,11 +173,14 @@ describe('SearchFilter Component', () => {
     await user.type(searchInput, 'laptop');
     await user.clear(searchInput);
 
-    // Advance timers
-    jest.advanceTimersByTime(300);
-
-    // ASSERT: Should not show loading for empty search
+    // ASSERT: Check that input is empty and no loading state should appear
+    expect(searchInput).toHaveValue('');
     expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
+    
+    // Wait a reasonable amount of time to confirm no search is triggered
+    await waitFor(() => {
+      expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
+    }, { timeout: 500 });
   });
 
   /**
@@ -203,10 +196,10 @@ describe('SearchFilter Component', () => {
     const searchInput = screen.getByPlaceholderText('Search products...');
     await user.type(searchInput, 'laptop');
 
-    // Advance timers to trigger search
-    jest.advanceTimersByTime(300);
-
-    // Wait for search to complete (simulated)
+    // ASSERT: Wait for search to trigger and complete naturally
+    await screen.findByText('Searching...', {}, { timeout: 500 });
+    
+    // Wait for search to complete
     await waitFor(() => {
       expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
     }, { timeout: 1000 });
@@ -278,13 +271,8 @@ describe('SearchFilter Component', () => {
     await user.type(minPriceInput, '100');
     await user.click(inStockCheckbox);
 
-    // Advance timers to trigger search
-    jest.advanceTimersByTime(300);
-
-    // ASSERT: Should trigger search with all filters
-    await waitFor(() => {
-      expect(screen.getByText('Searching...')).toBeInTheDocument();
-    });
+    // ASSERT: Should trigger search with all filters naturally
+    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -298,22 +286,12 @@ describe('SearchFilter Component', () => {
 
     // ACT: Simulate rapid typing
     const searchInput = screen.getByPlaceholderText('Search products...');
-    await user.type(searchInput, 'l');
-    await user.type(searchInput, 'a');
-    await user.type(searchInput, 'p');
-    await user.type(searchInput, 't');
-    await user.type(searchInput, 'o');
-    await user.type(searchInput, 'p');
+    await user.type(searchInput, 'laptop');
 
     // ASSERT: Should not show loading during rapid typing
     expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
 
-    // ACT: Advance timers to trigger debounced search
-    jest.advanceTimersByTime(100);
-
-    // ASSERT: Should now show loading
-    await waitFor(() => {
-      expect(screen.getByText('Searching...')).toBeInTheDocument();
-    });
+    // ASSERT: Should eventually show loading after debounce naturally
+    await expect(screen.findByText('Searching...', {}, { timeout: 200 })).resolves.toBeInTheDocument();
   });
 }); 

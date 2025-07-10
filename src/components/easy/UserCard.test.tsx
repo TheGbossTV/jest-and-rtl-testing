@@ -51,8 +51,10 @@ describe('UserCard Component', () => {
     
     // ACT & ASSERT: Check all elements are present
     expect(screen.getByText('Jane Smith')).toBeInTheDocument();
-    expect(screen.getByText('Email: jane@example.com')).toBeInTheDocument();
-    expect(screen.getByText('Age: 25 years old')).toBeInTheDocument();
+    expect(screen.getByText(/Email:/)).toBeInTheDocument();
+    expect(screen.getByText('jane@example.com')).toBeInTheDocument();
+    expect(screen.getByText(/Age:/)).toBeInTheDocument();
+    expect(screen.getByText(/25 years old/)).toBeInTheDocument();
     expect(screen.getByText('🟢 Active')).toBeInTheDocument();
   });
 
@@ -103,7 +105,8 @@ describe('UserCard Component', () => {
     );
     
     // ACT & ASSERT: Age should be present, email should not
-    expect(screen.getByText('Age: 30 years old')).toBeInTheDocument();
+    expect(screen.getByText(/Age:/)).toBeInTheDocument();
+    expect(screen.getByText(/30 years old/)).toBeInTheDocument();
     expect(screen.queryByText(/Email:/)).not.toBeInTheDocument();
   });
 

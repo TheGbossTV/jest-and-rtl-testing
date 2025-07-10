@@ -27,7 +27,7 @@ describe('ItemList Component', () => {
     expect(screen.getByText('No items to display')).toBeInTheDocument();
     
     // Check that no list is rendered (in the component output area)
-    const componentOutput = screen.getByText('No items to display').closest('.component-output');
+    const componentOutput = screen.getByText('No items to display').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     expect(componentOutput!.querySelector('ul')).not.toBeInTheDocument();
     
@@ -64,7 +64,7 @@ describe('ItemList Component', () => {
     
     // Check single item is present
     // Query for listitem within the actual component output area
-    const componentOutput = screen.getByText('First item').closest('.component-output');
+    const componentOutput = screen.getByText('First item').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     const listItems = componentOutput!.querySelectorAll('li');
     expect(listItems).toHaveLength(1);
@@ -87,7 +87,7 @@ describe('ItemList Component', () => {
     render(<ItemList items={items} />);
     
     // ACT & ASSERT: Check all items are rendered
-    const componentOutput = screen.getByText('Apple').closest('.component-output');
+    const componentOutput = screen.getByText('Apple').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     const listItems = componentOutput!.querySelectorAll('li');
     expect(listItems).toHaveLength(4);
@@ -112,7 +112,7 @@ describe('ItemList Component', () => {
     render(<ItemList items={['Pizza']} title={customTitle} />);
     
     // ACT & ASSERT: Check custom title appears
-    const componentOutput = screen.getByText(customTitle).closest('.component-output');
+    const componentOutput = screen.getByText(customTitle).closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     const heading = componentOutput!.querySelector('h3');
     expect(heading).toHaveTextContent(customTitle);
@@ -127,7 +127,7 @@ describe('ItemList Component', () => {
     render(<ItemList items={['Item']} />);
     
     // ACT & ASSERT: Check default title
-    const componentOutput = screen.getByText('Items').closest('.component-output');
+    const componentOutput = screen.getByText('Items').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     const heading = componentOutput!.querySelector('h3');
     expect(heading).toHaveTextContent('Items');
@@ -143,7 +143,7 @@ describe('ItemList Component', () => {
     render(<ItemList items={items} />);
     
     // ACT & ASSERT: Check list structure
-    const componentOutput = screen.getByText('Item 1').closest('.component-output');
+    const componentOutput = screen.getByText('Item 1').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     const list = componentOutput!.querySelector('ul');
     expect(list).toBeInTheDocument();
@@ -163,7 +163,7 @@ describe('ItemList Component', () => {
     render(<ItemList items={items} />);
     
     // ACT & ASSERT: Check all items render correctly
-    const componentOutput = screen.getByText('Normal text').closest('.component-output');
+    const componentOutput = screen.getByText('Normal text').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     const listItems = componentOutput!.querySelectorAll('li');
     expect(listItems).toHaveLength(4);

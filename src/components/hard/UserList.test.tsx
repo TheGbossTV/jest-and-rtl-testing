@@ -236,7 +236,7 @@ describe('UserList Component', () => {
 
     // Check individual user cards
     // Get the user cards by finding them within the component output
-    const componentOutput = screen.getByText('John Doe').closest('.component-output');
+    const componentOutput = screen.getByText('John Doe').closest('.component-demo');
     expect(componentOutput).not.toBeNull();
     const userCards = componentOutput!.querySelectorAll('.user-card');
     expect(userCards).toHaveLength(2);
