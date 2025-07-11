@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface Todo {
   id: string;
@@ -18,11 +18,11 @@ const TodoList: React.FC<TodoListProps> = ({
   onTodoAdd,
   onTodoToggle,
   onTodoDelete,
-  initialTodos = []
+  initialTodos = [],
 }) => {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
-  const [inputValue, setInputValue] = useState('');
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [inputValue, setInputValue] = useState("");
+  const [filter, setFilter] = useState<"all" | "active" | "completed">("all");
 
   const addTodo = () => {
     if (inputValue.trim()) {
@@ -30,18 +30,18 @@ const TodoList: React.FC<TodoListProps> = ({
         id: Date.now().toString(),
         text: inputValue.trim(),
         completed: false,
-        createdAt: new Date()
+        createdAt: new Date(),
       };
-      
-      setTodos(prev => [...prev, newTodo]);
-      setInputValue('');
+
+      setTodos((prev) => [...prev, newTodo]);
+      setInputValue("");
       onTodoAdd?.(newTodo);
     }
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(prev => 
-      prev.map(todo => 
+    setTodos((prev) =>
+      prev.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
@@ -49,15 +49,15 @@ const TodoList: React.FC<TodoListProps> = ({
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(prev => prev.filter(todo => todo.id !== id));
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
     onTodoDelete?.(id);
   };
 
-  const filteredTodos = todos.filter(todo => {
+  const filteredTodos = todos.filter((todo) => {
     switch (filter) {
-      case 'active':
+      case "active":
         return !todo.completed;
-      case 'completed':
+      case "completed":
         return todo.completed;
       default:
         return true;
@@ -66,7 +66,7 @@ const TodoList: React.FC<TodoListProps> = ({
 
   const getStats = () => {
     const total = todos.length;
-    const completed = todos.filter(todo => todo.completed).length;
+    const completed = todos.filter((todo) => todo.completed).length;
     const active = total - completed;
     return { total, completed, active };
   };
@@ -74,7 +74,7 @@ const TodoList: React.FC<TodoListProps> = ({
   const stats = getStats();
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       addTodo();
     }
   };
@@ -86,12 +86,12 @@ const TodoList: React.FC<TodoListProps> = ({
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           placeholder="Add a new todo..."
           data-testid="todo-input"
         />
-        <button 
-          onClick={addTodo} 
+        <button
+          onClick={addTodo}
           disabled={!inputValue.trim()}
           data-testid="add-todo-button"
         >
@@ -101,22 +101,22 @@ const TodoList: React.FC<TodoListProps> = ({
 
       <div className="todo-filters">
         <button
-          onClick={() => setFilter('all')}
-          className={filter === 'all' ? 'active' : ''}
+          onClick={() => setFilter("all")}
+          className={filter === "all" ? "active" : ""}
           data-testid="filter-all"
         >
           All ({stats.total})
         </button>
         <button
-          onClick={() => setFilter('active')}
-          className={filter === 'active' ? 'active' : ''}
+          onClick={() => setFilter("active")}
+          className={filter === "active" ? "active" : ""}
           data-testid="filter-active"
         >
           Active ({stats.active})
         </button>
         <button
-          onClick={() => setFilter('completed')}
-          className={filter === 'completed' ? 'active' : ''}
+          onClick={() => setFilter("completed")}
+          className={filter === "completed" ? "active" : ""}
           data-testid="filter-completed"
         >
           Completed ({stats.completed})
@@ -126,13 +126,13 @@ const TodoList: React.FC<TodoListProps> = ({
       <div className="todo-items" data-testid="todo-items">
         {filteredTodos.length === 0 ? (
           <div className="no-todos" data-testid="no-todos">
-            {filter === 'all' ? 'No todos yet!' : `No ${filter} todos`}
+            {filter === "all" ? "No todos yet!" : `No ${filter} todos`}
           </div>
         ) : (
-          filteredTodos.map(todo => (
-            <div 
-              key={todo.id} 
-              className={`todo-item ${todo.completed ? 'completed' : ''}`}
+          filteredTodos.map((todo) => (
+            <div
+              key={todo.id}
+              className={`todo-item ${todo.completed ? "completed" : ""}`}
               data-testid={`todo-item-${todo.id}`}
             >
               <input
@@ -157,10 +157,11 @@ const TodoList: React.FC<TodoListProps> = ({
       </div>
 
       <div className="todo-stats" data-testid="todo-stats">
-        Total: {stats.total} | Active: {stats.active} | Completed: {stats.completed}
+        Total: {stats.total} | Active: {stats.active} | Completed:{" "}
+        {stats.completed}
       </div>
     </div>
   );
 };
 
-export default TodoList; 
+export default TodoList;
