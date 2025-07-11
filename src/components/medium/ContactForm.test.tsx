@@ -171,9 +171,11 @@ describe('ContactForm Component', () => {
     const submitButton = screen.getByRole('button', { name: /send message/i });
     await user.click(submitButton);
     
-    // ASSERT: Check loading state
+    // ASSERT: Check loading state appears
     // LOADING STATE TESTING: Verify button shows loading state during submission
-    expect(screen.getByRole('button', { name: /sending/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /sending/i })).toBeInTheDocument();
+    });
     expect(screen.getByRole('button', { name: /sending/i })).toBeDisabled();
     
     // ASYNC TESTING: waitFor() waits for asynchronous operations to complete
@@ -247,5 +249,52 @@ describe('ContactForm Component', () => {
     expect(screen.getByLabelText(/email/i)).toHaveValue('');
     expect(screen.getByLabelText(/message/i)).toHaveValue('');
     expect(screen.getByRole('button', { name: /send message/i })).toBeEnabled();
+  });
+
+  /**
+   * TEST 10: Email Validation Edge Cases
+   * Test various email validation scenarios
+   */
+  test('validates email format correctly', async () => {
+    // ARRANGE
+    const user = userEvent.setup();
+    render(<ContactForm />);
+    
+    // ACT: Fill form with invalid email
+    await user.type(screen.getByLabelText(/name/i), 'John Doe');
+    await user.type(screen.getByLabelText(/email/i), 'invalid-email');
+    await user.type(screen.getByLabelText(/message/i), 'This is a valid message with enough characters');
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+    
+    // ASSERT: Check that email validation error appears
+    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+  });
+
+  /**
+   * TEST 11: Form Submission Prevention
+   * Test that form prevents submission when validation fails
+   */
+  test('prevents form submission when validation fails', async () => {
+    // ARRANGE
+    const user = userEvent.setup();
+    const mockOnSubmit = jest.fn();
+    render(<ContactForm onSubmit={mockOnSubmit} />);
+    
+    // ACT: Submit form with invalid data
+    await user.type(screen.getByLabelText(/name/i), 'J'); // Too short
+    await user.type(screen.getByLabelText(/email/i), 'invalid-email');
+    await user.type(screen.getByLabelText(/message/i), 'Short'); // Too short
+    await user.click(screen.getByRole('button', { name: /send message/i }));
+    
+    // ASSERT: Verify validation errors are shown
+    expect(screen.getByText('Name must be at least 2 characters')).toBeInTheDocument();
+    expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+    expect(screen.getByText('Message must be at least 10 characters')).toBeInTheDocument();
+    
+    // ASSERT: Verify onSubmit was not called
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    
+    // ASSERT: Verify we're still on the form (not success state)
+    expect(screen.queryByText('Thank you for your message!')).not.toBeInTheDocument();
   });
 }); 

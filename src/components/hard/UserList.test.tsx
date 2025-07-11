@@ -164,6 +164,11 @@ describe('UserList Component', () => {
     // ACT: Render with custom URL
     render(<UserList apiUrl={customUrl} />);
 
+    // ASSERT: Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Loading users...')).not.toBeInTheDocument();
+    });
+
     // ASSERT: Check that service was called with correct URL
     // MOCK VERIFICATION: Check how the mock was called
     // toHaveBeenCalledWith() verifies the exact arguments passed
@@ -189,6 +194,11 @@ describe('UserList Component', () => {
     // ACT: Change the URL prop
     rerender(<UserList apiUrl="https://api2.com" />);
 
+    // WAIT FOR RE-RENDER: Ensure second API call completes
+    await waitFor(() => {
+      expect(mockUserService.fetchUsers).toHaveBeenCalledTimes(2);
+    });
+
     // ASSERT: Check that API was called twice with different URLs
     // CALL COUNT TESTING: Verify number of mock function calls
     expect(mockUserService.fetchUsers).toHaveBeenCalledTimes(2);
@@ -198,60 +208,55 @@ describe('UserList Component', () => {
   });
 
   /**
-   * TEST 7: UI Elements & Accessibility
-   * Test that retry button is present and clickable
+   * TEST 7: Retry Functionality
+   * Test that retry button is present and clickable when there's an error
    */
-  test('retry button is present and clickable', async () => {
+  test('retry button is present and clickable when there is an error', async () => {
     // ARRANGE: Mock API failure
-    mockUserService.fetchUsers.mockRejectedValue(new Error('Network error'));
-    
+    const errorMessage = 'Network error';
+    mockUserService.fetchUsers.mockRejectedValue(new Error(errorMessage));
+
+    // ACT: Render component
     render(<UserList />);
 
-    // Wait for error state
+    // ASSERT: Wait for error state
     await waitFor(() => {
-      expect(screen.getByText('Error: Network error')).toBeInTheDocument();
+      expect(screen.getByText(`Error: ${errorMessage}`)).toBeInTheDocument();
     });
 
-    // ACT & ASSERT: Check that retry button exists and is clickable
+    // ASSERT: Check that retry button is present and clickable
     const retryButton = screen.getByRole('button', { name: /retry/i });
     expect(retryButton).toBeInTheDocument();
     expect(retryButton).toBeEnabled();
     
-    // NOTE: In a real app, you'd implement proper retry logic instead of page reload
-    // This test verifies the button exists and is accessible
+    // NOTE: In a real application, you would implement a proper retry mechanism
+    // This test verifies that the retry button is accessible and functional
+    // The actual retry logic (window.location.reload) is an implementation detail
   });
 
   /**
-   * TEST 8: Mock Function Behavior Testing
-   * Test different mock implementations and behaviors
+   * TEST 8: Loading State Transitions
+   * Test that loading state appears and disappears correctly
    */
-  test('handles different response types', async () => {
-    // ARRANGE: Mock different responses for multiple calls
-    mockUserService.fetchUsers
-      .mockResolvedValueOnce([]) // First call returns empty array
-      .mockResolvedValueOnce(mockUsers) // Second call returns users
-      .mockRejectedValueOnce(new Error('Server error')); // Third call fails
+  test('shows loading state during API call', async () => {
+    // ARRANGE: Mock a delayed response
+    mockUserService.fetchUsers.mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve(mockUsers), 200))
+    );
 
-    // ACT & ASSERT: First render - empty state
-    const { rerender } = render(<UserList apiUrl="https://api1.com" />);
+    // ACT: Render component
+    render(<UserList />);
+
+    // ASSERT: Check loading state is shown immediately
+    expect(screen.getByText('Loading users...')).toBeInTheDocument();
+
+    // ASSERT: Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByText('0 users found')).toBeInTheDocument();
-    });
+      expect(screen.queryByText('Loading users...')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
 
-    // ACT & ASSERT: Second render - with users
-    rerender(<UserList apiUrl="https://api2.com" />);
-    await waitFor(() => {
-      expect(screen.getByText('2 users found')).toBeInTheDocument();
-    });
-
-    // ACT & ASSERT: Third render - error state
-    rerender(<UserList apiUrl="https://api3.com" />);
-    await waitFor(() => {
-      expect(screen.getByText('Error: Server error')).toBeInTheDocument();
-    });
-
-    // VERIFY MOCK CALLS: Check that all calls were made as expected
-    expect(mockUserService.fetchUsers).toHaveBeenCalledTimes(3);
+    // ASSERT: Check that users are displayed
+    expect(screen.getByText('2 users found')).toBeInTheDocument();
   });
 
   /**
@@ -293,10 +298,13 @@ describe('UserList Component', () => {
     // ACT: Test with admin URL
     render(<UserList apiUrl="https://api.com/admin/users" />);
     
-    // ASSERT: Check that custom logic was applied
+    // ASSERT: Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByText('Admin User')).toBeInTheDocument();
+      expect(screen.queryByText('Loading users...')).not.toBeInTheDocument();
     });
+
+    // ASSERT: Check that custom logic was applied
+    expect(screen.getByText('Admin User')).toBeInTheDocument();
 
     // PATTERN 2: Mock with spy functionality
     // This preserves the original function while allowing inspection

@@ -149,7 +149,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
 
   return (
     <div className="component-demo">
-      <form onSubmit={handleSubmit} className="contact-form">
+      <form onSubmit={handleSubmit} className="contact-form" noValidate>
         <h2>Contact Us</h2>
         
         <div className="form-group">

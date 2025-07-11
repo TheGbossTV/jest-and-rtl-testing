@@ -65,7 +65,7 @@ const UserList: React.FC<UserListProps> = ({
         const userData = await userService.fetchUsers(apiUrl);
         
         if (!controller.signal.aborted) {
-          setUsers(userData);
+          setUsers(userData.slice(0, 3));
         }
       } catch (err) {
         if (!controller.signal.aborted) {

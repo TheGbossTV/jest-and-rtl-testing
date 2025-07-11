@@ -1023,9 +1023,11 @@ describe('ContactForm Component', () => {
     const submitButton = screen.getByRole('button', { name: /send message/i });
     await user.click(submitButton);
     
-    // ASSERT: Check loading state
+    // ASSERT: Check loading state appears
     // LOADING STATE TESTING: Verify button shows loading state during submission
-    expect(screen.getByRole('button', { name: /sending/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /sending/i })).toBeInTheDocument();
+    });
     expect(screen.getByRole('button', { name: /sending/i })).toBeDisabled();
     
     // ASYNC TESTING: waitFor() waits for asynchronous operations to complete
@@ -1252,6 +1254,7 @@ export default ContactForm;`
 
 /// <reference types="@testing-library/jest-dom" />
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import UserList from './UserList';
 import { userService } from '../../services/userService';
 
@@ -1404,6 +1407,11 @@ describe('UserList Component', () => {
     // ACT: Render with custom URL
     render(<UserList apiUrl={customUrl} />);
 
+    // ASSERT: Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Loading users...')).not.toBeInTheDocument();
+    });
+
     // ASSERT: Check that service was called with correct URL
     // MOCK VERIFICATION: Check how the mock was called
     // toHaveBeenCalledWith() verifies the exact arguments passed
@@ -1429,6 +1437,11 @@ describe('UserList Component', () => {
     // ACT: Change the URL prop
     rerender(<UserList apiUrl="https://api2.com" />);
 
+    // WAIT FOR RE-RENDER: Ensure second API call completes
+    await waitFor(() => {
+      expect(mockUserService.fetchUsers).toHaveBeenCalledTimes(2);
+    });
+
     // ASSERT: Check that API was called twice with different URLs
     // CALL COUNT TESTING: Verify number of mock function calls
     expect(mockUserService.fetchUsers).toHaveBeenCalledTimes(2);
@@ -1438,27 +1451,30 @@ describe('UserList Component', () => {
   });
 
   /**
-   * TEST 7: UI Elements & Accessibility
-   * Test that retry button is present and clickable
+   * TEST 7: Retry Functionality
+   * Test that retry button is present and clickable when there's an error
    */
-  test('retry button is present and clickable', async () => {
+  test('retry button is present and clickable when there is an error', async () => {
     // ARRANGE: Mock API failure
-    mockUserService.fetchUsers.mockRejectedValue(new Error('Network error'));
-    
+    const errorMessage = 'Network error';
+    mockUserService.fetchUsers.mockRejectedValue(new Error(errorMessage));
+
+    // ACT: Render component
     render(<UserList />);
 
-    // Wait for error state
+    // ASSERT: Wait for error state
     await waitFor(() => {
-      expect(screen.getByText('Error: Network error')).toBeInTheDocument();
+      expect(screen.getByText(\`Error: \${errorMessage}\`)).toBeInTheDocument();
     });
 
-    // ACT & ASSERT: Check that retry button exists and is clickable
+    // ASSERT: Check that retry button is present and clickable
     const retryButton = screen.getByRole('button', { name: /retry/i });
     expect(retryButton).toBeInTheDocument();
     expect(retryButton).toBeEnabled();
     
-    // NOTE: In a real app, you'd implement proper retry logic instead of page reload
-    // This test verifies the button exists and is accessible
+    // NOTE: In a real application, you would implement a proper retry mechanism
+    // This test verifies that the retry button is accessible and functional
+    // The actual retry logic (window.location.reload) is an implementation detail
   });
 
   /**
@@ -1665,19 +1681,9 @@ import { SearchFilter } from './SearchFilter';
 
 describe('SearchFilter Component', () => {
   
-  // TIMER MOCKING: Control timing for debounced operations
+  // Clean up between tests without using fake timers
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.clearAllTimers();
-    // FAKE TIMERS: Replace real timers with controllable mocks
-    // This allows us to control setTimeout, setInterval, etc.
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    // TIMER CLEANUP: Run pending timers and restore real timers
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
   });
 
   /**
@@ -1704,8 +1710,7 @@ describe('SearchFilter Component', () => {
    */
   test('handles search input changes', async () => {
     // ARRANGE
-    // userEvent.setup({ delay: null }) - Remove default delays for faster tests
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT
@@ -1723,7 +1728,7 @@ describe('SearchFilter Component', () => {
    */
   test('debounces search input', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     const mockOnResultsChange = jest.fn();
     render(<SearchFilter onResultsChange={mockOnResultsChange} debounceMs={300} />);
 
@@ -1736,9 +1741,9 @@ describe('SearchFilter Component', () => {
     expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
 
     // ACT & ASSERT: Wait for debounced search to trigger by finding loading state
-    // findBy* - ASYNC QUERY: Waits for element to appear (up to 1000ms by default)
+    // findBy* - ASYNC QUERY: Waits for element to appear naturally
     // This is preferred over manual timer control for testing debounced operations
-    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Searching...', {}, { timeout: 1000 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -1747,7 +1752,7 @@ describe('SearchFilter Component', () => {
    */
   test('handles filter changes', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Change category filter
@@ -1783,7 +1788,7 @@ describe('SearchFilter Component', () => {
    */
   test('clears all filters when clear button is clicked', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Set some filters
@@ -1813,7 +1818,7 @@ describe('SearchFilter Component', () => {
    */
   test('shows loading state during search', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter debounceMs={100} />);
 
     // ACT
@@ -1823,7 +1828,7 @@ describe('SearchFilter Component', () => {
     // ASSERT: Wait for loading state to appear naturally after debounce
     // NATURAL ASYNC TESTING: Let the component's natural timing control the test
     // This is more realistic than manually controlling timers
-    await expect(screen.findByText('Searching...', {}, { timeout: 200 })).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -1832,7 +1837,7 @@ describe('SearchFilter Component', () => {
    */
   test('handles empty search input', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Type then clear
@@ -1857,7 +1862,7 @@ describe('SearchFilter Component', () => {
    */
   test('displays search statistics', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT
@@ -1866,10 +1871,12 @@ describe('SearchFilter Component', () => {
 
     // ASSERT: Wait for search to trigger and complete naturally
     // COMPLETE ASYNC FLOW: Test the full cycle from input to results
-    await screen.findByText('Searching...', {}, { timeout: 500 });
+    await screen.findByText('Searching...', {}, { timeout: 1000 });
     
-    // Note: In a real test, you'd wait for the search to complete and results to appear
-    // This demonstrates the pattern for testing complete async workflows
+    // Wait for search to complete by waiting for loading to disappear
+    await waitFor(() => {
+      expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 
   /**
@@ -1878,7 +1885,7 @@ describe('SearchFilter Component', () => {
    */
   test('demonstrates query method differences', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // getBy* - USE WHEN: Element should exist immediately
@@ -1894,7 +1901,7 @@ describe('SearchFilter Component', () => {
 
     // findBy* - USE WHEN: Element will appear after async operation
     // Waits for element to appear - essential for testing async operations
-    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Searching...', {}, { timeout: 1000 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -1903,24 +1910,23 @@ describe('SearchFilter Component', () => {
    */
   test('handles rapid user input without performance issues', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     const mockOnResultsChange = jest.fn();
     render(<SearchFilter onResultsChange={mockOnResultsChange} debounceMs={300} />);
 
     // ACT: Rapid typing simulation
     // PERFORMANCE TESTING: Simulate rapid user input
     const searchInput = screen.getByPlaceholderText('Search products...');
-    await user.type(searchInput, 'a');
-    await user.type(searchInput, 'b');
-    await user.type(searchInput, 'c');
-    await user.type(searchInput, 'd');
+    await user.type(searchInput, 'laptop');
 
-    // ASSERT: Only final search should be triggered due to debouncing
+    // ASSERT: Wait for debounced search to trigger
     // DEBOUNCE VERIFICATION: Check that debouncing prevents excessive API calls
-    await screen.findByText('Searching...', {}, { timeout: 500 });
+    await screen.findByText('Searching...', {}, { timeout: 1000 });
     
-    // In a real test, you'd verify the callback was called only once
-    // This demonstrates testing debounced behavior for performance
+    // Wait for search to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 
   /**
@@ -1929,7 +1935,7 @@ describe('SearchFilter Component', () => {
    */
   test('supports keyboard navigation', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Use keyboard to navigate

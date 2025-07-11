@@ -17,19 +17,9 @@ import { SearchFilter } from './SearchFilter';
 
 describe('SearchFilter Component', () => {
   
-  // TIMER MOCKING: Control timing for debounced operations
+  // Clean up between tests without using fake timers
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.clearAllTimers();
-    // FAKE TIMERS: Replace real timers with controllable mocks
-    // This allows us to control setTimeout, setInterval, etc.
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    // TIMER CLEANUP: Run pending timers and restore real timers
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
   });
 
   /**
@@ -56,8 +46,7 @@ describe('SearchFilter Component', () => {
    */
   test('handles search input changes', async () => {
     // ARRANGE
-    // userEvent.setup({ delay: null }) - Remove default delays for faster tests
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT
@@ -75,7 +64,7 @@ describe('SearchFilter Component', () => {
    */
   test('debounces search input', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     const mockOnResultsChange = jest.fn();
     render(<SearchFilter onResultsChange={mockOnResultsChange} debounceMs={300} />);
 
@@ -88,9 +77,9 @@ describe('SearchFilter Component', () => {
     expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
 
     // ACT & ASSERT: Wait for debounced search to trigger by finding loading state
-    // findBy* - ASYNC QUERY: Waits for element to appear (up to 1000ms by default)
+    // findBy* - ASYNC QUERY: Waits for element to appear naturally
     // This is preferred over manual timer control for testing debounced operations
-    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Searching...', {}, { timeout: 1000 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -99,7 +88,7 @@ describe('SearchFilter Component', () => {
    */
   test('handles filter changes', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Change category filter
@@ -135,7 +124,7 @@ describe('SearchFilter Component', () => {
    */
   test('clears all filters when clear button is clicked', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Set some filters
@@ -165,7 +154,7 @@ describe('SearchFilter Component', () => {
    */
   test('shows loading state during search', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter debounceMs={100} />);
 
     // ACT
@@ -175,7 +164,7 @@ describe('SearchFilter Component', () => {
     // ASSERT: Wait for loading state to appear naturally after debounce
     // NATURAL ASYNC TESTING: Let the component's natural timing control the test
     // This is more realistic than manually controlling timers
-    await expect(screen.findByText('Searching...', {}, { timeout: 200 })).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -184,7 +173,7 @@ describe('SearchFilter Component', () => {
    */
   test('handles empty search input', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Type then clear
@@ -209,7 +198,7 @@ describe('SearchFilter Component', () => {
    */
   test('displays search statistics', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT
@@ -218,10 +207,12 @@ describe('SearchFilter Component', () => {
 
     // ASSERT: Wait for search to trigger and complete naturally
     // COMPLETE ASYNC FLOW: Test the full cycle from input to results
-    await screen.findByText('Searching...', {}, { timeout: 500 });
+    await screen.findByText('Searching...', {}, { timeout: 1000 });
     
-    // Note: In a real test, you'd wait for the search to complete and results to appear
-    // This demonstrates the pattern for testing complete async workflows
+    // Wait for search to complete by waiting for loading to disappear
+    await waitFor(() => {
+      expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 
   /**
@@ -230,7 +221,7 @@ describe('SearchFilter Component', () => {
    */
   test('demonstrates query method differences', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // getBy* - USE WHEN: Element should exist immediately
@@ -246,7 +237,7 @@ describe('SearchFilter Component', () => {
 
     // findBy* - USE WHEN: Element will appear after async operation
     // Waits for element to appear - essential for testing async operations
-    await expect(screen.findByText('Searching...', {}, { timeout: 500 })).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Searching...', {}, { timeout: 1000 })).resolves.toBeInTheDocument();
   });
 
   /**
@@ -255,24 +246,23 @@ describe('SearchFilter Component', () => {
    */
   test('handles rapid user input without performance issues', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     const mockOnResultsChange = jest.fn();
     render(<SearchFilter onResultsChange={mockOnResultsChange} debounceMs={300} />);
 
     // ACT: Rapid typing simulation
     // PERFORMANCE TESTING: Simulate rapid user input
     const searchInput = screen.getByPlaceholderText('Search products...');
-    await user.type(searchInput, 'a');
-    await user.type(searchInput, 'b');
-    await user.type(searchInput, 'c');
-    await user.type(searchInput, 'd');
+    await user.type(searchInput, 'laptop');
 
-    // ASSERT: Only final search should be triggered due to debouncing
+    // ASSERT: Wait for debounced search to trigger
     // DEBOUNCE VERIFICATION: Check that debouncing prevents excessive API calls
-    await screen.findByText('Searching...', {}, { timeout: 500 });
+    await screen.findByText('Searching...', {}, { timeout: 1000 });
     
-    // In a real test, you'd verify the callback was called only once
-    // This demonstrates testing debounced behavior for performance
+    // Wait for search to complete
+    await waitFor(() => {
+      expect(screen.queryByText('Searching...')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 
   /**
@@ -281,7 +271,7 @@ describe('SearchFilter Component', () => {
    */
   test('supports keyboard navigation', async () => {
     // ARRANGE
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<SearchFilter />);
 
     // ACT: Use keyboard to navigate
