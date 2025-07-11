@@ -1,15 +1,4 @@
-// Type definitions for jest-dom matchers
-import '@testing-library/jest-dom';
+/// <reference types="@testing-library/jest-dom" />
 
-declare global {
-  namespace jest {
-    interface Matchers<R> {
-      toHaveTextContent(text: string): R;
-      toBeInTheDocument(): R;
-      toHaveValue(value: string): R;
-      toBeDisabled(): R;
-      toBeEnabled(): R;
-      toHaveClass(...classes: string[]): R;
-    }
-  }
-} 
+// This file ensures TypeScript recognizes the jest-dom matchers
+// The actual type definitions come from @testing-library/jest-dom 

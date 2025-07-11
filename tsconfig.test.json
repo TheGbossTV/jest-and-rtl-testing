@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "types": ["jest", "@testing-library/jest-dom", "node"],
+    "verbatimModuleSyntax": false,
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*",
+    "jest.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+} 
