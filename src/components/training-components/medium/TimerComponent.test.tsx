@@ -1,10 +1,13 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import TimerComponent from "./TimerComponent";
-import user from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
 describe("TimerComponent Tests", () => {
+  let user: ReturnType<typeof userEvent.setup>;
+
   beforeEach(() => {
     jest.useFakeTimers();
+    user = userEvent.setup({ delay: null });
   });
 
   afterEach(() => {
@@ -100,7 +103,15 @@ describe("TimerComponent Tests", () => {
 
       expect(timerDisplay).toHaveTextContent("01:00");
 
-      user.click(startButton);
+      await user.click(startButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/status:/i)).toHaveTextContent(
+          "Status: running"
+        );
+      });
+
+      jest.advanceTimersByTime(1000);
 
       await waitFor(() => {
         expect(startButton).not.toBeInTheDocument();
