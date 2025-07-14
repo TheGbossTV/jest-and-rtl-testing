@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 
 interface ApiResponse<T> {
   data: T;
-  status: 'success' | 'error';
+  status: "success" | "error";
   message?: string;
 }
 
@@ -10,7 +10,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'user' | 'guest';
+  role: "admin" | "user" | "guest";
 }
 
 interface AsyncDataFetcherProps {
@@ -19,7 +19,8 @@ interface AsyncDataFetcherProps {
   onError?: (error: Error) => void;
   retryAttempts?: number;
   refreshInterval?: number;
-  filterRole?: 'admin' | 'user' | 'guest' | null;
+  filterRole?: "admin" | "user" | "guest" | null;
+  returnEmpty?: boolean;
 }
 
 const AsyncDataFetcher: React.FC<AsyncDataFetcherProps> = ({
@@ -28,85 +29,122 @@ const AsyncDataFetcher: React.FC<AsyncDataFetcherProps> = ({
   onError,
   retryAttempts = 3,
   refreshInterval = 0,
-  filterRole = null
+  filterRole = null,
+  returnEmpty = false,
 }) => {
   const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [lastFetch, setLastFetch] = useState<Date | null>(null);
-  const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
 
-  const mockFetch = useCallback(async (url: string, signal: AbortSignal): Promise<ApiResponse<User[]>> => {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500));
-    
-    if (signal.aborted) {
-      throw new Error('Request was aborted');
-    }
-    
-    // Simulate random failures for testing
-    if (Math.random() < 0.3) {
-      throw new Error('Network error: Failed to fetch data');
-    }
-    
-    // Mock data
-    const mockUsers: User[] = [
-      { id: 1, name: 'John Doe', email: 'john@example.com', role: 'admin' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'user' },
-      { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'guest' },
-      { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'user' },
-      { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'admin' },
-    ];
-    
-    return {
-      data: mockUsers,
-      status: 'success',
-      message: 'Data fetched successfully'
-    };
-  }, []);
+  const mockFetch = useCallback(
+    async (url: string, signal: AbortSignal): Promise<ApiResponse<User[]>> => {
+      console.log("mockFetch", url);
 
-  const fetchData = useCallback(async (isRetry: boolean = false) => {
-    if (abortController) {
-      abortController.abort();
-    }
-    
-    const controller = new AbortController();
-    setAbortController(controller);
-    
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await mockFetch(endpoint, controller.signal);
-      
-      if (response.status === 'error') {
-        throw new Error(response.message || 'Unknown error occurred');
+      // Simulate network delay
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.random() * 1000 + 500)
+      );
+
+      if (signal.aborted) {
+        throw new Error("Request was aborted");
       }
-      
-      setData(response.data);
-      setLastFetch(new Date());
-      setRetryCount(0);
-      onDataLoad?.(response.data);
-      
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        return; // Request was aborted, don't set error
+
+      // Simulate random failures for testing
+      if (Math.random() < 0.3) {
+        throw new Error("Network error: Failed to fetch data");
       }
-      
-      const error = err instanceof Error ? err : new Error('Unknown error');
-      setError(error);
-      onError?.(error);
-      
-      if (!isRetry && retryCount < retryAttempts) {
-        setRetryCount(prev => prev + 1);
-        setTimeout(() => fetchData(true), 1000 * Math.pow(2, retryCount)); // Exponential backoff
+
+      // Mock data
+      const mockUsers: User[] = [
+        { id: 1, name: "John Doe", email: "john@example.com", role: "admin" },
+        { id: 2, name: "Jane Smith", email: "jane@example.com", role: "user" },
+        { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "guest" },
+        {
+          id: 4,
+          name: "Alice Brown",
+          email: "alice@example.com",
+          role: "user",
+        },
+        {
+          id: 5,
+          name: "Charlie Wilson",
+          email: "charlie@example.com",
+          role: "admin",
+        },
+      ];
+
+      if (returnEmpty) {
+        return {
+          data: [],
+          status: "success",
+          message: "Data fetched successfully",
+        };
       }
-    } finally {
-      setLoading(false);
-      setAbortController(null);
-    }
-  }, [endpoint, mockFetch, onDataLoad, onError, retryAttempts, retryCount, abortController]);
+
+      return {
+        data: mockUsers,
+        status: "success",
+        message: "Data fetched successfully",
+      };
+    },
+    []
+  );
+
+  const fetchData = useCallback(
+    async (isRetry: boolean = false) => {
+      if (abortController) {
+        abortController.abort();
+      }
+
+      const controller = new AbortController();
+      setAbortController(controller);
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await mockFetch(endpoint, controller.signal);
+
+        if (response.status === "error") {
+          throw new Error(response.message || "Unknown error occurred");
+        }
+
+        setData(response.data);
+        setLastFetch(new Date());
+        setRetryCount(0);
+        onDataLoad?.(response.data);
+      } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+          return; // Request was aborted, don't set error
+        }
+
+        const error = err instanceof Error ? err : new Error("Unknown error");
+        setError(error);
+        onError?.(error);
+
+        if (!isRetry && retryCount < retryAttempts) {
+          setRetryCount((prev) => prev + 1);
+          setTimeout(() => fetchData(true), 1000 * Math.pow(2, retryCount)); // Exponential backoff
+        }
+      } finally {
+        setLoading(false);
+        setAbortController(null);
+      }
+    },
+    [
+      endpoint,
+      mockFetch,
+      onDataLoad,
+      onError,
+      retryAttempts,
+      retryCount,
+      abortController,
+    ]
+  );
 
   // Initial fetch
   useEffect(() => {
@@ -119,7 +157,7 @@ const AsyncDataFetcher: React.FC<AsyncDataFetcherProps> = ({
       const interval = setInterval(() => {
         fetchData();
       }, refreshInterval);
-      
+
       return () => clearInterval(interval);
     }
   }, [refreshInterval, fetchData]);
@@ -142,14 +180,14 @@ const AsyncDataFetcher: React.FC<AsyncDataFetcherProps> = ({
     fetchData();
   };
 
-  const filteredData = filterRole 
-    ? data.filter(user => user.role === filterRole)
+  const filteredData = filterRole
+    ? data.filter((user) => user.role === filterRole)
     : data;
 
   const getStatusMessage = () => {
-    if (loading) return 'Loading...';
+    if (loading) return "Loading...";
     if (error) return `Error: ${error.message}`;
-    if (data.length === 0) return 'No data available';
+    if (data.length === 0) return "No data available";
     return `Loaded ${filteredData.length} users`;
   };
 
@@ -158,18 +196,15 @@ const AsyncDataFetcher: React.FC<AsyncDataFetcherProps> = ({
       <div className="fetcher-header">
         <h3>User Data</h3>
         <div className="fetcher-controls">
-          <button 
-            onClick={handleRefresh} 
+          <button
+            onClick={handleRefresh}
             disabled={loading}
             data-testid="refresh-button"
           >
-            {loading ? 'Loading...' : 'Refresh'}
+            {loading ? "Loading..." : "Refresh"}
           </button>
           {error && retryCount >= retryAttempts && (
-            <button 
-              onClick={handleRetry}
-              data-testid="retry-button"
-            >
+            <button onClick={handleRetry} data-testid="retry-button">
               Retry
             </button>
           )}
@@ -200,9 +235,9 @@ const AsyncDataFetcher: React.FC<AsyncDataFetcherProps> = ({
 
       {!loading && !error && filteredData.length > 0 && (
         <div className="data-grid" data-testid="data-grid">
-          {filteredData.map(user => (
-            <div 
-              key={user.id} 
+          {filteredData.map((user) => (
+            <div
+              key={user.id}
               className={`user-card ${user.role}`}
               data-testid={`user-card-${user.id}`}
             >
@@ -217,4 +252,4 @@ const AsyncDataFetcher: React.FC<AsyncDataFetcherProps> = ({
   );
 };
 
-export default AsyncDataFetcher; 
+export default AsyncDataFetcher;
